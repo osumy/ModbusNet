@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36623.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModbusNet.Core", "ModbusNet.Core\ModbusNet.Core.csproj", "{B719515D-338E-4111-A08C-B5EF43C8728F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModbusNet.Transports", "ModbusNet.Transports\ModbusNet.Transports.csproj", "{DFFF4030-BD45-4602-A1E3-87E41BF5816F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModbusNet.Master", "ModbusNet.Master\ModbusNet.Master.csproj", "{9289624B-4BDD-4496-B91C-599880A061B5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B719515D-338E-4111-A08C-B5EF43C8728F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B719515D-338E-4111-A08C-B5EF43C8728F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B719515D-338E-4111-A08C-B5EF43C8728F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B719515D-338E-4111-A08C-B5EF43C8728F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFFF4030-BD45-4602-A1E3-87E41BF5816F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFFF4030-BD45-4602-A1E3-87E41BF5816F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFFF4030-BD45-4602-A1E3-87E41BF5816F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFFF4030-BD45-4602-A1E3-87E41BF5816F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9289624B-4BDD-4496-B91C-599880A061B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9289624B-4BDD-4496-B91C-599880A061B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9289624B-4BDD-4496-B91C-599880A061B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9289624B-4BDD-4496-B91C-599880A061B5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BF5C4375-739D-400A-A30F-B2C4A4DB6CB9}
+	EndGlobalSection
+EndGlobal
