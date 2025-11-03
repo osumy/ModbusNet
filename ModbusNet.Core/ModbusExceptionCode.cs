@@ -4,7 +4,7 @@
     /// Modbus protocol-defined exception codes returned by slaves when an error occurs.
     /// See: Modbus Application Protocol Specification v1.1b3, Section 7.
     /// </summary>
-    public enum ExceptionCode : byte
+    public enum ModbusExceptionCode : byte
     {
         /// <summary>
         /// The function code received in the query is not an allowable action for the slave.
