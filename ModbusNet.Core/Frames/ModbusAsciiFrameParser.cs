@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using ModbusNet.Core.Utils;
+using System.Globalization;
 
 namespace ModbusNet.Core.Frames
 {
@@ -33,7 +34,7 @@ namespace ModbusNet.Core.Frames
             var data = new ReadOnlyMemory<byte>(bytes, 2, bytes.Length - 3);
 
             // Validate LRC
-            if (!LrcCalculator.Validate(bytes.AsSpan(0, bytes.Length - 1), lrc))
+            if (!ErrorCheckCalculator.ValidateLrc(bytes.AsSpan(0, bytes.Length - 1), lrc))
                 throw new FormatException("Invalid LRC checksum.");
 
             return new ModbusAsciiFrame(unitId, functionCode, data, lrc);

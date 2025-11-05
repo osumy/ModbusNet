@@ -1,4 +1,5 @@
 ﻿using ModbusNet.Core.Messages;
+using ModbusNet.Core.Utils;
 using System.Text;
 
 namespace ModbusNet.Core.Frames
@@ -15,7 +16,7 @@ namespace ModbusNet.Core.Frames
             };
             buffer.AddRange(message.Data.ToArray());
 
-            byte lrc = LrcCalculator.Compute(buffer.ToArray());
+            byte lrc = ErrorCheckCalculator.ComputeLrc(buffer.ToArray());
 
             // Convert all to ASCII HEX
             var sb = new StringBuilder();
