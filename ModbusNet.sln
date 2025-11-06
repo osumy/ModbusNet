@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11201.2 d18.0
+VisualStudioVersion = 18.0.11201.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModbusNet", "ModbusNet\ModbusNet.csproj", "{B719515D-338E-4111-A08C-B5EF43C8728F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModbusNet.Test", "ModbusNet.Test\ModbusNet.Test.csproj", "{AF94CDBD-951C-4C8D-B43C-02FC435C5FA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{B719515D-338E-4111-A08C-B5EF43C8728F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B719515D-338E-4111-A08C-B5EF43C8728F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B719515D-338E-4111-A08C-B5EF43C8728F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF94CDBD-951C-4C8D-B43C-02FC435C5FA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF94CDBD-951C-4C8D-B43C-02FC435C5FA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF94CDBD-951C-4C8D-B43C-02FC435C5FA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF94CDBD-951C-4C8D-B43C-02FC435C5FA0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
