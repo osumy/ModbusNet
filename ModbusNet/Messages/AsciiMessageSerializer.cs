@@ -1,10 +1,11 @@
-﻿using ModbusNet.Core.Messages;
+﻿using ModbusNet.Core;
+using ModbusNet.Core.Messages;
 using ModbusNet.Core.Utils;
 using System;
 using System.Buffers;
 using System.Text;
 
-namespace ModbusNet.Core
+namespace ModbusNet.Messages
 {
     public sealed class AsciiMessageSerializer : IMessageSerializer
     {
