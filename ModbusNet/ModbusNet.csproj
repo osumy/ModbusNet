@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Messages\Responses\" />
-    <Folder Include="Transport\" />
   </ItemGroup>
 
   <ItemGroup>
