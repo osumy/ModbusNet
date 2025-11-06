@@ -1,7 +1,7 @@
 ﻿using ModbusNet.Core.Messages;
 using System.Buffers;
 
-namespace ModbusNet.Core
+namespace ModbusNet.Messages.Interfaces
 {
     public interface IMessageSerializer
     {

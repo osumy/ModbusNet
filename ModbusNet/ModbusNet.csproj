@@ -11,4 +11,8 @@
     <Folder Include="Transport\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" Version="9.0.10" />
+  </ItemGroup>
+
 </Project>
