@@ -211,7 +211,7 @@ namespace ModbusNet.Core
             return factory.CreateRtuMaster(adapter);
         }
     
-        public static IModbusSerialMaster CreateAsciiMaster(this IModbusFactory factory, SerialPort serialPort)
+        public static IModbusSerialMaster CreateAsciiMaster(SerialPort serialPort)
         {
             //var adapter = new SerialPortAdapter(serialPort);
             return factory.CreateAsciiMaster(adapter);
