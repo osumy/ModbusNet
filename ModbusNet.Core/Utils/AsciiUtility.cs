@@ -1,17 +1,47 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Resources;
 using System.Runtime.CompilerServices;
+using System.Text;
 
-namespace ModbusNet.Core
+namespace ModbusNet.Core.Utils
 {
-    internal static class AsciiHelpers
+    public static class AsciiUtility
     {
-        // Compute LRC: LRC = (-sum) & 0xFF where sum is over address, function, data bytes.
-        public static byte ComputeLrc(ReadOnlySpan<byte> data)
+        /// <summary>
+        ///     Converts an array of bytes to an ASCII byte array.
+        /// </summary>
+        /// <param name="numbers">The byte array.</param>
+        /// <returns>An array of ASCII byte values.</returns>
+        public static byte[] GetAsciiBytes(params byte[] numbers)
         {
-            int sum = 0;
-            foreach (var b in data) sum += b;
-            return (byte)((-sum) & 0xFF);
+            return Encoding.UTF8.GetBytes(numbers.SelectMany(n => n.ToString("X2")).ToArray());
+        }
+
+
+        /// <summary>
+        ///     Converts a hex string to a byte array.
+        /// </summary>
+        /// <param name="hex">The hex string.</param>
+        /// <returns>Array of bytes.</returns>
+        public static byte[] HexToBytes(string hex)
+        {
+            if (hex == null)
+            {
+                throw new ArgumentNullException(nameof(hex));
+            }
+
+            if (hex.Length % 2 != 0)
+            {
+                throw new FormatException("Hex string must have even number of characters."); // TODO: Add resource
+            }
+
+            byte[] bytes = new byte[hex.Length / 2];
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                bytes[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
+            }
+
+            return bytes;
         }
 
         // Encode bytes to ASCII HEX into destination span. Returns number of bytes written (2 * src.Length).

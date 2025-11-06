@@ -1,4 +1,5 @@
 ﻿using ModbusNet.Core.Messages;
+using ModbusNet.Core.Utils;
 using System;
 using System.Buffers;
 using System.Text;
@@ -20,7 +21,7 @@ namespace ModbusNet.Core
             payload[1] = message.FunctionCode;
             message.Data.Span.CopyTo(payload.Slice(2));
 
-            byte lrc = AsciiHelpers.ComputeLrc(payload);
+            byte lrc = ErrorCheckCalculator.ComputeLrc(payload);
 
             // Convert payload + LRC to hex ASCII
             int hexLen = (payloadLen + 1) * 2; // +1 for LRC, 2 chars per byte
@@ -28,9 +29,9 @@ namespace ModbusNet.Core
             var span = writer.GetSpan(1 + hexLen + 2);
             int pos = 0;
             span[pos++] = Colon;
-            AsciiHelpers.EncodeHex(payload, span.Slice(pos, payloadLen * 2));
+            AsciiUtility.EncodeHex(payload, span.Slice(pos, payloadLen * 2));
             pos += payloadLen * 2;
-            AsciiHelpers.EncodeHex(new ReadOnlySpan<byte>(new[] { lrc }), span.Slice(pos, 2));
+            AsciiUtility.EncodeHex(new ReadOnlySpan<byte>(new[] { lrc }), span.Slice(pos, 2));
             pos += 2;
             span[pos++] = Cr;
             span[pos++] = Lf;
@@ -95,7 +96,7 @@ namespace ModbusNet.Core
                 byte[] raw = ArrayPool<byte>.Shared.Rent(rawLen);
                 try
                 {
-                    int written = AsciiHelpers.DecodeHex(hexSpan, raw);
+                    int written = AsciiUtility.DecodeHex(hexSpan, raw);
                     if (written != rawLen) throw new ModbusProtocolException("Invalid hex characters in ASCII frame.");
 
                     // raw layout: [Unit][Function][Data...][LRC]
@@ -112,7 +113,7 @@ namespace ModbusNet.Core
                     lrcSpan[1] = function;
                     if (dataLen > 0) new ReadOnlySpan<byte>(raw, 2, dataLen).CopyTo(lrcSpan.Slice(2));
 
-                    byte computed = AsciiHelpers.ComputeLrc(lrcSpan);
+                    byte computed = ErrorCheckCalculator.ComputeLrc(lrcSpan);
                     if (computed != lrc) throw new ModbusCrcException($"LRC mismatch: computed=0x{computed:X2} received=0x{lrc:X2}");
 
                     message = new ModbusMessage(unit, function, data);
