@@ -6,11 +6,9 @@
         public byte Retries { get; set; } = 3;
         public int DelayBetweenRetriesMs { get; set; } = 100;
 
-        // تنظیمات خاص ASCII
         public string AsciiStartDelimiter { get; set; } = ":";
         public string AsciiEndDelimiter { get; set; } = "\r\n";
 
-        // تنظیمات خاص RTU
         public int RtuInterCharTimeoutMs { get; set; } = 2;
         public int RtuInterFrameTimeoutMs { get; set; } = 5;
 

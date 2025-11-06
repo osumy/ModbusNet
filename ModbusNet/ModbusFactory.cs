@@ -205,7 +205,7 @@ namespace ModbusNet.Core
 
 
 
-        public static IModbusSerialMaster CreateRtuMaster(this IModbusFactory factory, SerialPort serialPort)
+        public static IModbusSerialMaster CreateRtuMaster(SerialPort serialPort)
         {
             //var adapter = new SerialPortAdapter(serialPort);
             return factory.CreateRtuMaster(adapter);
