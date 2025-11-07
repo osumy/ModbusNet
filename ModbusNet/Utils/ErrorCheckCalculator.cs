@@ -21,8 +21,7 @@
                 lrc += b;
             }
 
-            // (byte)((lrc ^ 0xFF) + 1)
-            return (byte)(-lrc);     // Two's complement
+            return (byte)(~lrc + 1);     // Two's complement
         }
 
         /// <summary>
