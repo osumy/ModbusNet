@@ -7,22 +7,13 @@ namespace ModbusNet.Transport
     public class AsciiTransport : IModbusTransport
     {
         private readonly SerialPort _serialPort;
-        private readonly ModbusSettings _settings;
         private readonly ASCIIEncoding _encoding = new ASCIIEncoding();
 
         public bool IsConnected => _serialPort.IsOpen;
 
-        public AsciiTransport(string portName, int baudRate, ModbusSettings settings = null)
+        public AsciiTransport(SerialPort serialPort)
         {
-            _settings = settings ?? ModbusSettings.Default;
-            _serialPort = new SerialPort(portName, baudRate)
-            {
-                DataBits = 7,
-                Parity = Parity.Even,
-                StopBits = StopBits.One,
-                ReadTimeout = (int)_settings.Timeout.TotalMilliseconds,
-                WriteTimeout = (int)_settings.Timeout.TotalMilliseconds
-            };
+            _serialPort = serialPort;
         }
 
         public void Connect()
@@ -53,44 +44,46 @@ namespace ModbusNet.Transport
 
         private string ConvertToAscii(byte[] data)
         {
-            var lrc = CalculateLrc(data);
-            var dataWithLrc = new byte[data.Length + 1];
-            Array.Copy(data, 0, dataWithLrc, 0, data.Length);
-            dataWithLrc[data.Length] = lrc;
+            //var lrc = CalculateLrc(data);
+            //var dataWithLrc = new byte[data.Length + 1];
+            //Array.Copy(data, 0, dataWithLrc, 0, data.Length);
+            //dataWithLrc[data.Length] = lrc;
 
-            var hexString = BitConverter.ToString(dataWithLrc).Replace("-", "");
-            return _settings.AsciiStartDelimiter + hexString + _settings.AsciiEndDelimiter;
+            //var hexString = BitConverter.ToString(dataWithLrc).Replace("-", "");
+            //return _settings.AsciiStartDelimiter + hexString + _settings.AsciiEndDelimiter;
+            return "";
         }
 
         private byte[] ReceiveResponse()
         {
-            // خواندن تا Start Delimiter
-            while (_serialPort.ReadByte() != _settings.AsciiStartDelimiter[0]) { }
+            //// خواندن تا Start Delimiter
+            //while (_serialPort.ReadByte() != _settings.AsciiStartDelimiter[0]) { }
 
-            // خواندن داده تا End Delimiter
-            var buffer = new System.Collections.Generic.List<byte>();
-            var endDelimiter = _encoding.GetBytes(_settings.AsciiEndDelimiter);
-            var endIndex = 0;
+            //// خواندن داده تا End Delimiter
+            //var buffer = new System.Collections.Generic.List<byte>();
+            //var endDelimiter = _encoding.GetBytes(_settings.AsciiEndDelimiter);
+            //var endIndex = 0;
 
-            while (true)
-            {
-                var b = (byte)_serialPort.ReadByte();
+            //while (true)
+            //{
+            //    var b = (byte)_serialPort.ReadByte();
 
-                if (b == endDelimiter[endIndex])
-                {
-                    endIndex++;
-                    if (endIndex == endDelimiter.Length)
-                        break;
-                }
-                else
-                {
-                    endIndex = 0;
-                    buffer.Add(b);
-                }
-            }
+            //    if (b == endDelimiter[endIndex])
+            //    {
+            //        endIndex++;
+            //        if (endIndex == endDelimiter.Length)
+            //            break;
+            //    }
+            //    else
+            //    {
+            //        endIndex = 0;
+            //        buffer.Add(b);
+            //    }
+            //}
 
-            var hexString = _encoding.GetString(buffer.ToArray());
-            return ConvertFromAscii(hexString);
+            //var hexString = _encoding.GetString(buffer.ToArray());
+            //return ConvertFromAscii(hexString);
+            return Array.Empty<byte>();
         }
 
         private byte[] ConvertFromAscii(string asciiFrame)

@@ -40,17 +40,17 @@ namespace ModbusNet.Transport
         {
             Connect();
 
-            // اضافه کردن CRC
-            var crc = Crc16.Calculate(request);
-            var frame = new byte[request.Length + 2];
-            Array.Copy(request, 0, frame, 0, request.Length);
-            frame[request.Length] = (byte)(crc & 0xFF);
-            frame[request.Length + 1] = (byte)((crc >> 8) & 0xFF);
+            //// اضافه کردن CRC
+            //var crc = ErrorCheckCalculator.ComputeCrc(request);
+            //var frame = new byte[request.Length + 2];
+            //Array.Copy(request, 0, frame, 0, request.Length);
+            //frame[request.Length] = (byte)(crc & 0xFF);
+            //frame[request.Length + 1] = (byte)((crc >> 8) & 0xFF);
 
-            // ارسال
-            _serialPort.Write(frame, 0, frame.Length);
+            //// ارسال
+            //_serialPort.Write(frame, 0, frame.Length);
 
-            // دریافت پاسخ
+            //// دریافت پاسخ
             return ReceiveResponse(request[0]); // slaveId
         }
 
