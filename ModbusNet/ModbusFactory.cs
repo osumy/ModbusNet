@@ -9,6 +9,10 @@
 //using NModbus.IO;
 //using NModbus.Logging;
 
+using ModbusNet.Device;
+using ModbusNet.Transport;
+using System.IO.Ports;
+
 namespace ModbusNet.Core
 {
     public class ModbusFactory// : IModbusFactory
@@ -205,16 +209,16 @@ namespace ModbusNet.Core
 
 
 
-        public static IModbusSerialMaster CreateRtuMaster(SerialPort serialPort)
-        {
-            //var adapter = new SerialPortAdapter(serialPort);
-            return factory.CreateRtuMaster(adapter);
-        }
+        //public static IModbusSerialMaster CreateRtuMaster(SerialPort serialPort)
+        //{
+        //    //var adapter = new SerialPortAdapter(serialPort);
+        //    return factory.CreateRtuMaster(adapter);
+        //}
     
-        public static IModbusSerialMaster CreateAsciiMaster(SerialPort serialPort)
+        public static ModbusMaster CreateAsciiMaster(SerialPort serialPort)
         {
-            //var adapter = new SerialPortAdapter(serialPort);
-            return factory.CreateAsciiMaster(adapter);
+            var transport = new AsciiTransport(serialPort);
+            return new ModbusMaster(transport);
         }
 
     }
