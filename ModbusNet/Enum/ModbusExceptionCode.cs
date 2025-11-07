@@ -1,4 +1,4 @@
-﻿namespace ModbusNet.Core
+﻿namespace ModbusNet.Enum
 {
     /// <summary>
     /// Modbus protocol-defined exception codes returned by slaves when an error occurs.

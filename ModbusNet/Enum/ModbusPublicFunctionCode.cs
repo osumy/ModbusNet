@@ -1,4 +1,4 @@
-﻿namespace ModbusNet.Core
+﻿namespace ModbusNet.Enum
 {
     /// <summary>
     /// Supported public function codes
