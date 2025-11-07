@@ -10,6 +10,8 @@ namespace ModbusNet.Transport
         private readonly ASCIIEncoding _encoding = new ASCIIEncoding();
 
         public bool IsConnected => _serialPort.IsOpen;
+        private bool _disposed = false;
+
 
         public AsciiTransport(SerialPort serialPort)
         {
@@ -18,12 +20,16 @@ namespace ModbusNet.Transport
 
         public void Connect()
         {
+            ThrowIfDisposed();
+
             if (!_serialPort.IsOpen)
                 _serialPort.Open();
         }
 
         public void Disconnect()
         {
+            ThrowIfDisposed();
+
             if (_serialPort.IsOpen)
                 _serialPort.Close();
         }
@@ -32,13 +38,10 @@ namespace ModbusNet.Transport
         {
             Connect();
 
-            // تبدیل به ASCII
             var asciiFrame = ConvertToAscii(request);
 
-            // ارسال فریم
             _serialPort.Write(asciiFrame);
 
-            // دریافت پاسخ
             return ReceiveResponse();
         }
 
@@ -98,28 +101,28 @@ namespace ModbusNet.Transport
 
             // بررسی LRC
             var data = bytes.Take(bytes.Length - 1).ToArray();
-            var receivedLrc = bytes.Last();
-            var calculatedLrc = CalculateLrc(data);
+            //var receivedLrc = bytes.Last();
+            //var calculatedLrc = CalculateLrc(data);
 
-            if (receivedLrc != calculatedLrc)
-                throw new InvalidOperationException("LRC check failed");
+            //if (receivedLrc != calculatedLrc)
+            //    throw new InvalidOperationException("LRC check failed");
 
             return data;
         }
 
-        private byte CalculateLrc(byte[] data)
+        private void ThrowIfDisposed()
         {
-            byte lrc = 0;
-            foreach (byte b in data)
-            {
-                lrc += b;
-            }
-            return (byte)(-(sbyte)lrc);
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
         }
 
         public void Dispose()
         {
-            _serialPort?.Dispose();
+            if (!_disposed)
+            {
+                _serialPort?.Dispose();
+                _disposed = true;
+            }
         }
     }
 }

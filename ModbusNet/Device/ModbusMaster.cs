@@ -1,12 +1,8 @@
-﻿using ModbusNet.Core;
-using ModbusNet.Messages.Requests;
+﻿using ModbusNet.Messages.Requests;
 using ModbusNet.Messages.Responses;
 using ModbusNet.Transport;
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Runtime;
-using System.Threading.Tasks;
+using System.IO;
+using System.IO.Ports;
 
 namespace ModbusNet.Device
 {
@@ -32,6 +28,8 @@ namespace ModbusNet.Device
         /// <returns>Coils status</returns>
         public bool[] ReadCoils(byte slaveId, ushort startAddress, ushort numberOfPoints)
         {
+            ThrowIfDisposed();
+
             //ValidateNumberOfPoints("numberOfPoints", numberOfPoints, 2000);
 
             var request = new ReadCoilsRequest(slaveId, startAddress, numberOfPoints);
@@ -97,6 +95,12 @@ namespace ModbusNet.Device
 
         //    throw new TimeoutException($"Request failed after {_settings.Retries + 1} attempts");
         //}
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
+        }
 
         public void Dispose()
         {
