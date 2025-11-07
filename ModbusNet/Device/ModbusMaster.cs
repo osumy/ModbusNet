@@ -1,8 +1,7 @@
 ﻿using ModbusNet.Messages.Requests;
 using ModbusNet.Messages.Responses;
+using ModbusNet.Messages.Responses.ModbusNet.Messages.Responses;
 using ModbusNet.Transport;
-using System.IO;
-using System.IO.Ports;
 
 namespace ModbusNet.Device
 {
@@ -19,44 +18,30 @@ namespace ModbusNet.Device
             _transport = transport;
         }
 
-        /// <summary>
-        ///    Reads from 1 to 2000 contiguous coils status.
-        /// </summary>
-        /// <param name="slaveAddress">Address of device to read values from.</param>
-        /// <param name="startAddress">Address to begin reading.</param>
-        /// <param name="numberOfPoints">Number of coils to read.</param>
-        /// <returns>Coils status</returns>
-        public bool[] ReadCoils(byte slaveId, ushort startAddress, ushort numberOfPoints)
-        {
-            ThrowIfDisposed();
+        ///// <summary>
+        /////    Reads from 1 to 2000 contiguous coils status.
+        ///// </summary>
+        ///// <param name="slaveAddress">Address of device to read values from.</param>
+        ///// <param name="startAddress">Address to begin reading.</param>
+        ///// <param name="numberOfPoints">Number of coils to read.</param>
+        ///// <returns>Coils status.</returns>
+        //public bool[] ReadCoils(byte slaveId, ushort startAddress, ushort numberOfPoints)
+        //{
+        //    ThrowIfDisposed();
 
-            //ValidateNumberOfPoints("numberOfPoints", numberOfPoints, 2000);
+        //    //ValidateNumberOfPoints("numberOfPoints", numberOfPoints, 2000);
 
-            var request = new ReadCoilsRequest(slaveId, startAddress, numberOfPoints);
-            //var responseData = SendRequestWithRetry(request.Serialize());
-            //var response = ReadCoilsResponse.Deserialize(slaveId, responseData);
-            //return response.Coils.Take(numberOfPoints).ToArray();
-            return Array.Empty<bool>();
-        }
+        //    var request = new ReadCoilsRequest(slaveId, startAddress, numberOfPoints);
+        //    //var responseData = SendRequestWithRetry(request.Serialize());
+        //    //var response = ReadCoilsResponse.Deserialize(slaveId, responseData);
+        //    //return response.Coils.Take(numberOfPoints).ToArray();
+        //    return Array.Empty<bool>();
+        //}
 
         //public bool ReadCoil(byte slaveId, ushort address)
         //{
         //    var coils = ReadCoils(slaveId, address, 1);
         //    return coils[0];
-        //}
-
-        //public ushort[] ReadHoldingRegisters(byte slaveId, ushort startAddress, ushort numberOfPoints)
-        //{
-        //    var request = new ReadHoldingRegistersRequest(slaveId, startAddress, numberOfPoints);
-        //    var responseData = SendRequestWithRetry(request.Serialize());
-        //    var response = ReadHoldingRegistersResponse.Deserialize(slaveId, responseData);
-        //    return response.Registers.Take(numberOfPoints).ToArray();
-        //}
-
-        //public ushort ReadHoldingRegister(byte slaveId, ushort address)
-        //{
-        //    var registers = ReadHoldingRegisters(slaveId, address, 1);
-        //    return registers[0];
         //}
 
         //public void WriteCoil(byte slaveId, ushort address, bool value)
@@ -69,32 +54,87 @@ namespace ModbusNet.Device
         //        throw new InvalidOperationException("Write coil verification failed");
         //}
 
-        //public void WriteRegister(byte slaveId, ushort address, ushort value)
-        //{
-        //    var request = new WriteRegisterRequest(slaveId, address, value);
-        //    var responseData = SendRequestWithRetry(request.Serialize());
-        //    var response = WriteRegisterResponse.Deserialize(slaveId, responseData);
+        /// <summary>
+        ///    Reads contiguous block of holding registers.
+        /// </summary>
+        /// <param name="slaveId">Address of device to read values from.</param>
+        /// <param name="startAddress">Address to begin reading.</param>
+        /// <param name="numberOfPoints">Number of holding registers to read.</param>
+        /// <returns>Holding registers status.</returns>
+        public ushort[] ReadHoldingRegisters(byte slaveId, ushort startAddress, ushort numberOfPoints)
+        {
+            ThrowIfDisposed();
 
-        //    if (response.Address != address || response.Value != value)
-        //        throw new InvalidOperationException("Write register verification failed");
+            if (numberOfPoints < 1 || numberOfPoints > 125)
+                throw new ArgumentOutOfRangeException(nameof(numberOfPoints), "Must be 1-125 for Read Holding Registers");
+
+            var request = new ReadHoldingRegistersRequest(slaveId, startAddress, numberOfPoints);
+
+            //return PerformReadRegisters(request);
+
+            var responseData = SendRequestWithRetry(request.Serialize());
+            var response = ReadHoldingRegistersResponse.Deserialize(slaveId, responseData);
+            return response.Registers;
+        }
+
+        public ushort ReadHoldingRegister(byte slaveId, ushort address)
+        {
+            ThrowIfDisposed();
+
+            var registers = ReadHoldingRegisters(slaveId, address, 1);
+            return registers[0];
+        }
+
+        /// <summary>
+        ///    Writes a single holding register.
+        /// </summary>
+        /// <param name="slaveId">Address of the device to write to.</param>
+        /// <param name="registerAddress">Address to write.</param>
+        /// <param name="value">Value to write.</param>
+        public void WriteSingleRegister(byte slaveId, ushort registerAddress, ushort value)
+        {
+            ThrowIfDisposed();
+
+            var request = new WriteSingleRegisterRequest(slaveId, registerAddress, value);
+            var responseData = SendRequestWithRetry(request.Serialize());
+            var response = WriteSingleRegisterResponse.Deserialize(slaveId, responseData);
+
+            if (response.Address != registerAddress || response.Value != value)
+                throw new InvalidOperationException("Write register verification failed");
+        }
+
+        //private ushort[] PerformReadRegisters(ReadHoldingRegistersRequest request)
+        //{
+        //    ReadHoldingRegistersResponse response =
+        //            Transport.UnicastMessage<ReadHoldingInputRegistersResponse>(request);
+
+        //    var response = ReadHoldingRegistersResponse.Deserialize(slaveId, responseData);
+        //    return response.Registers;
+
+        //    return response.Data.Take(request.NumberOfPoints).ToArray();
         //}
 
-        //private byte[] SendRequestWithRetry(byte[] request)
-        //{
-        //    for (int attempt = 0; attempt <= _settings.Retries; attempt++)
-        //    {
-        //        try
-        //        {
-        //            return _transport.SendRequest(request);
-        //        }
-        //        catch (TimeoutException) when (attempt < _settings.Retries)
-        //        {
-        //            System.Threading.Thread.Sleep(_settings.DelayBetweenRetriesMs);
-        //        }
-        //    }
+        private byte[] SendRequestWithRetry(byte[] request)
+        {
+            ThrowIfDisposed();
 
-        //    throw new TimeoutException($"Request failed after {_settings.Retries + 1} attempts");
-        //}
+            var retries = 3;
+            var delayBetweenRetriesMs = 100;
+
+            for (int attempt = 0; attempt <= retries; attempt++)
+            {
+                try
+                {
+                    return _transport.SendRequest(request);
+                }
+                catch (TimeoutException) when (attempt < retries)
+                {
+                    Thread.Sleep(delayBetweenRetriesMs);
+                }
+            }
+
+            throw new TimeoutException($"Request failed after {retries + 1} attempts");
+        }
 
         private void ThrowIfDisposed()
         {
