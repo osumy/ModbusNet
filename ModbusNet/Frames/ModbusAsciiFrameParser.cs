@@ -34,7 +34,7 @@ namespace ModbusNet.Frames
             var data = new ReadOnlyMemory<byte>(bytes, 2, bytes.Length - 3);
 
             // Validate LRC
-            if (!ErrorCheckCalculator.ValidateLrc(bytes.AsSpan(0, bytes.Length - 1), lrc))
+            if (!ErrorCheckUtility.ValidateLrc(bytes.AsSpan(0, bytes.Length - 1), lrc))
                 throw new FormatException("Invalid LRC checksum.");
 
             return new ModbusAsciiFrame(unitId, functionCode, data, lrc);

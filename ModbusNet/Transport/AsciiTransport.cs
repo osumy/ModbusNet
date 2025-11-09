@@ -62,7 +62,7 @@ namespace ModbusNet.Transport
         public byte[] BuildFrame(byte[] msgFrame)
         {
             var msgFrameAscii = AsciiUtility.GetAsciiBytes(msgFrame);
-            var lrcAscii = AsciiUtility.GetAsciiBytes(ErrorCheckCalculator.ComputeLrc(msgFrame));
+            var lrcAscii = AsciiUtility.GetAsciiBytes(ErrorCheckUtility.ComputeLrc(msgFrame));
             var nlAscii = Encoding.UTF8.GetBytes(NewLine.ToCharArray());
 
             var frame = new MemoryStream(1 + msgFrameAscii.Length + lrcAscii.Length + nlAscii.Length);
@@ -77,7 +77,7 @@ namespace ModbusNet.Transport
 
         public bool ChecksumsMatch(IModbusMessage message, byte[] messageFrame)
         {
-            return ErrorCheckCalculator.ComputeLrc(message.MessageFrame) == messageFrame[messageFrame.Length - 1];
+            return ErrorCheckUtility.ComputeLrc(message.MessageFrame) == messageFrame[messageFrame.Length - 1];
         }
 
         //public byte[] ReadRequest()
@@ -229,7 +229,7 @@ namespace ModbusNet.Transport
             Array.Copy(raw, 0, message, 0, message.Length);
 
             // Validate LRC
-            var calc = ErrorCheckCalculator.ComputeLrc(message);
+            var calc = ErrorCheckUtility.ComputeLrc(message);
             if (calc != lrc)
                 throw new InvalidDataException($"LRC mismatch. Calculated 0x{calc:X2}, Received 0x{lrc:X2}.");
 

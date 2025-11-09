@@ -16,7 +16,7 @@ namespace ModbusNet.Frames
             };
             buffer.AddRange(message.Data.ToArray());
 
-            byte lrc = ErrorCheckCalculator.ComputeLrc(buffer.ToArray());
+            byte lrc = ErrorCheckUtility.ComputeLrc(buffer.ToArray());
 
             // Convert all to ASCII HEX
             var sb = new StringBuilder();

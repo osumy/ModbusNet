@@ -4,7 +4,7 @@
     /// Provides utility methods for error checking using LRC (Longitudinal Redundancy Check) 
     /// and CRC (Cyclic Redundancy Check) algorithms commonly used in Modbus communication.
     /// </summary>
-    public static class ErrorCheckCalculator
+    public static class ErrorCheckUtility
     {
         //// Longitudinal Redundancy Check (LRC) ////
 

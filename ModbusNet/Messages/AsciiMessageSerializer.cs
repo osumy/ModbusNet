@@ -23,7 +23,7 @@ namespace ModbusNet.Messages
             payload[1] = message.FunctionCode;
             message.Data.Span.CopyTo(payload.Slice(2));
 
-            byte lrc = ErrorCheckCalculator.ComputeLrc(payload);
+            byte lrc = ErrorCheckUtility.ComputeLrc(payload);
 
             // Convert payload + LRC to hex ASCII
             int hexLen = (payloadLen + 1) * 2; // +1 for LRC, 2 chars per byte
@@ -115,7 +115,7 @@ namespace ModbusNet.Messages
                     lrcSpan[1] = function;
                     if (dataLen > 0) new ReadOnlySpan<byte>(raw, 2, dataLen).CopyTo(lrcSpan.Slice(2));
 
-                    byte computed = ErrorCheckCalculator.ComputeLrc(lrcSpan);
+                    byte computed = ErrorCheckUtility.ComputeLrc(lrcSpan);
                     if (computed != lrc) throw new ModbusCrcException($"LRC mismatch: computed=0x{computed:X2} received=0x{lrc:X2}");
 
                     message = new ModbusMessage(unit, function, data);
