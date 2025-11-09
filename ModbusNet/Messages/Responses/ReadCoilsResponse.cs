@@ -2,7 +2,7 @@
 
 namespace ModbusNet.Messages.Responses
 {
-    public class ReadCoilsResponse : IModbusResponse
+    public class ReadCoilsResponse 
     {
         public byte SlaveId { get; }
         public byte FunctionCode => 0x01;

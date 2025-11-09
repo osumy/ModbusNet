@@ -29,10 +29,10 @@ namespace ModbusNet.Core.Messages
         [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
         byte[] ProtocolDataUnit { get; }
 
-        /// <summary>
-        ///     A unique identifier assigned to a message when using the IP protocol.
-        /// </summary>
-        ushort TransactionId { get; set; }
+        ///// <summary>
+        /////     A unique identifier assigned to a message when using the IP protocol.
+        ///// </summary>
+        //ushort TransactionId { get; set; }
 
         /// <summary>
         ///     Initializes a modbus message from the specified message frame.

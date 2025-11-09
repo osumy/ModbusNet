@@ -68,13 +68,13 @@ namespace ModbusNet.Device
             if (numberOfPoints < 1 || numberOfPoints > 125)
                 throw new ArgumentOutOfRangeException(nameof(numberOfPoints), "Must be 1-125 for Read Holding Registers");
 
-            var request = new ReadHoldingRegistersRequest(slaveId, startAddress, numberOfPoints);
+            var request = new ReadHoldingRegistersRequest(0x03, slaveId, startAddress, numberOfPoints);
 
             //return PerformReadRegisters(request);
-
-            var responseData = SendRequestWithRetry(request.Serialize());
-            var response = ReadHoldingRegistersResponse.Deserialize(slaveId, responseData);
-            return response.Registers;
+            request.Serialize();
+            var responseData = SendRequestWithRetry(request.MessageFrame);
+            //var response = ReadHoldingRegistersResponse.Deserialize(slaveId, responseData);
+            return responseData;
         }
 
         public ushort ReadHoldingRegister(byte slaveId, ushort address)
@@ -93,14 +93,14 @@ namespace ModbusNet.Device
         /// <param name="value">Value to write.</param>
         public void WriteSingleRegister(byte slaveId, ushort registerAddress, ushort value)
         {
-            ThrowIfDisposed();
+            //ThrowIfDisposed();
 
-            var request = new WriteSingleRegisterRequest(slaveId, registerAddress, value);
-            var responseData = SendRequestWithRetry(request.Serialize());
-            var response = WriteSingleRegisterResponse.Deserialize(slaveId, responseData);
+            //var request = new WriteSingleRegisterRequest(slaveId, registerAddress, value);
+            //var responseData = SendRequestWithRetry(request.Serialize());
+            //var response = WriteSingleRegisterResponse.Deserialize(slaveId, responseData);
 
-            if (response.Address != registerAddress || response.Value != value)
-                throw new InvalidOperationException("Write register verification failed");
+            //if (response.Address != registerAddress || response.Value != value)
+            //    throw new InvalidOperationException("Write register verification failed");
         }
 
         //private ushort[] PerformReadRegisters(ReadHoldingRegistersRequest request)
@@ -114,7 +114,7 @@ namespace ModbusNet.Device
         //    return response.Data.Take(request.NumberOfPoints).ToArray();
         //}
 
-        private byte[] SendRequestWithRetry(byte[] request)
+        private ushort[] SendRequestWithRetry(byte[] request)
         {
             ThrowIfDisposed();
 
