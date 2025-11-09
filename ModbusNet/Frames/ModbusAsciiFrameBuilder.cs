@@ -1,8 +1,8 @@
-﻿using ModbusNet.Core.Messages;
-using ModbusNet.Core.Utils;
+﻿using ModbusNet.Messages;
+using ModbusNet.Utils;
 using System.Text;
 
-namespace ModbusNet.Core.Frames
+namespace ModbusNet.Frames
 {
     public static class ModbusAsciiFrameBuilder
     {

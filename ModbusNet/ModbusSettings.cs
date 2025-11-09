@@ -1,4 +1,4 @@
-﻿namespace ModbusNet.Core
+﻿namespace ModbusNet
 {
     public class ModbusSettings
     {

@@ -1,4 +1,4 @@
-﻿namespace ModbusNet.Core.Utils
+﻿namespace ModbusNet.Utils
 {
     /// <summary>
     /// Provides utility methods for error checking using LRC (Longitudinal Redundancy Check) 

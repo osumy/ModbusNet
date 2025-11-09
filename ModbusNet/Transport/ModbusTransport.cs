@@ -1,5 +1,5 @@
-﻿//using ModbusNet.Core;
-//using ModbusNet.Core.Messages;
+﻿//using ModbusNet;
+//using ModbusNet.Messages;
 //using ModbusNet.Messages;
 //using ModbusNet.Utils;
 //using System.Net.Sockets;

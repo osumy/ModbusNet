@@ -1,4 +1,4 @@
-﻿using ModbusNet.Core.Messages;
+﻿using ModbusNet.Messages;
 using System.Buffers;
 
 namespace ModbusNet.Messages.Interfaces

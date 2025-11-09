@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace ModbusNet.Core.Utils
+namespace ModbusNet.Utils
 {
     public static class AsciiUtility
     {

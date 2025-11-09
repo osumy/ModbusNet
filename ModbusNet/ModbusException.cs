@@ -1,5 +1,5 @@
 ﻿using System;
-namespace ModbusNet.Core
+namespace ModbusNet
 {
     public class ModbusProtocolException : Exception
     {

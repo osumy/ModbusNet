@@ -13,7 +13,7 @@ using ModbusNet.Device;
 using ModbusNet.Transport;
 using System.IO.Ports;
 
-namespace ModbusNet.Core
+namespace ModbusNet
 {
     public class ModbusFactory// : IModbusFactory
     {

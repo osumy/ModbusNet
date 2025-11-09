@@ -1,4 +1,4 @@
-﻿namespace ModbusNet.Core.Frames
+﻿namespace ModbusNet.Frames
 {
     public record ModbusAsciiFrame(
         byte UnitId,

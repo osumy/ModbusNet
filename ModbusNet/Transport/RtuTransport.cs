@@ -1,5 +1,5 @@
-﻿using ModbusNet.Core;
-using ModbusNet.Core.Utils;
+﻿using ModbusNet;
+using ModbusNet.Utils;
 using System.IO.Ports;
 
 namespace ModbusNet.Transport

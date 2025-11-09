@@ -1,7 +1,7 @@
-﻿using ModbusNet.Core.Utils;
+﻿using ModbusNet.Utils;
 using System.Globalization;
 
-namespace ModbusNet.Core.Frames
+namespace ModbusNet.Frames
 {
     public static class ModbusAsciiFrameParser
     {

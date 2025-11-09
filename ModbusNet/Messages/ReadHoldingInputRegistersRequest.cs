@@ -1,4 +1,4 @@
-﻿using ModbusNet.Core.Messages;
+﻿using ModbusNet.Messages;
 using System;
 using System.Diagnostics;
 using System.IO;

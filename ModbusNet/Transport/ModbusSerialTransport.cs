@@ -1,4 +1,4 @@
-﻿//using ModbusNet.Core.Messages;
+﻿//using ModbusNet.Messages;
 //using System.Diagnostics;
 
 //namespace ModbusNet.Transport

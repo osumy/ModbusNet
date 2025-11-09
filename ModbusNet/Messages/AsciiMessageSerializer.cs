@@ -1,6 +1,6 @@
-﻿using ModbusNet.Core;
-using ModbusNet.Core.Messages;
-using ModbusNet.Core.Utils;
+﻿using ModbusNet;
+using ModbusNet.Messages;
+using ModbusNet.Utils;
 using ModbusNet.Messages.Interfaces;
 using System;
 using System.Buffers;

@@ -1,4 +1,4 @@
-﻿using ModbusNet.Core;
+﻿using ModbusNet;
 using System.IO.Ports;
 
 //var factory = new ModbusFactory();

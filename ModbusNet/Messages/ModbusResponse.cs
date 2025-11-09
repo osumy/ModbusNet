@@ -1,4 +1,4 @@
-﻿namespace ModbusNet.Core.Messages
+﻿namespace ModbusNet.Messages
 {
     public class ModbusResponse
     {
