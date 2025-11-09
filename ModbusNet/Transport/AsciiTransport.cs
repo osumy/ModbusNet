@@ -61,8 +61,8 @@ namespace ModbusNet.Transport
         //}
         public byte[] BuildFrame(byte[] msgFrame)
         {
-            var msgFrameAscii = AsciiUtility.GetAsciiBytes(msgFrame);
-            var lrcAscii = AsciiUtility.GetAsciiBytes(ErrorCheckUtility.ComputeLrc(msgFrame));
+            var msgFrameAscii = AsciiUtility.ToAsciiBytes(msgFrame);
+            var lrcAscii = AsciiUtility.ToAsciiBytes(ErrorCheckUtility.ComputeLrc(msgFrame));
             var nlAscii = Encoding.UTF8.GetBytes(NewLine.ToCharArray());
 
             var frame = new MemoryStream(1 + msgFrameAscii.Length + lrcAscii.Length + nlAscii.Length);
@@ -210,23 +210,22 @@ namespace ModbusNet.Transport
                 throw new FormatException("Invalid ASCII payload length (must be even number of hex chars).");
 
             // Decode ASCII hex -> raw bytes using your AsciiUtility.DecodeHex
-            var raw = new byte[payload.Count / 2];
-            int decoded = AsciiUtility.DecodeHex(payload.ToArray(), raw);
-            if (decoded < 0)
-                throw new FormatException("Invalid hex characters in ASCII payload.");
+            var decoded = AsciiUtility.FromAsciiBytes(payload.ToArray());
+            //if (decoded < 0)
+            //    throw new FormatException("Invalid hex characters in ASCII payload.");
 
-            if (decoded != raw.Length)
-                throw new InvalidOperationException("Decoded length mismatch.");
+            //if (decoded != raw.Length)
+            //    throw new InvalidOperationException("Decoded length mismatch.");
 
-            if (raw.Length < 1)
+            if (decoded.Length < 1)
                 throw new FormatException("Decoded Modbus frame too short.");
 
             // Last byte is LRC
-            var lrc = raw[raw.Length - 1];
+            var lrc = decoded[decoded.Length - 1];
 
             // Extract message without LRC
-            var message = new byte[raw.Length - 1];
-            Array.Copy(raw, 0, message, 0, message.Length);
+            var message = new byte[decoded.Length - 1];
+            Array.Copy(decoded, 0, message, 0, message.Length);
 
             // Validate LRC
             var calc = ErrorCheckUtility.ComputeLrc(message);

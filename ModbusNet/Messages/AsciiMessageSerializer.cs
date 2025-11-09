@@ -31,9 +31,9 @@ namespace ModbusNet.Messages
             var span = writer.GetSpan(1 + hexLen + 2);
             int pos = 0;
             span[pos++] = Colon;
-            AsciiUtility.EncodeHex(payload, span.Slice(pos, payloadLen * 2));
+            //AsciiUtility.EncodeHex(payload, span.Slice(pos, payloadLen * 2));
             pos += payloadLen * 2;
-            AsciiUtility.EncodeHex(new ReadOnlySpan<byte>(new[] { lrc }), span.Slice(pos, 2));
+            //AsciiUtility.EncodeHex(new ReadOnlySpan<byte>(new[] { lrc }), span.Slice(pos, 2));
             pos += 2;
             span[pos++] = Cr;
             span[pos++] = Lf;
@@ -98,7 +98,7 @@ namespace ModbusNet.Messages
                 byte[] raw = ArrayPool<byte>.Shared.Rent(rawLen);
                 try
                 {
-                    int written = AsciiUtility.DecodeHex(hexSpan, raw);
+                    int written = 0;//AsciiUtility.DecodeHex(hexSpan, raw);
                     if (written != rawLen) throw new ModbusProtocolException("Invalid hex characters in ASCII frame.");
 
                     // raw layout: [Unit][Function][Data...][LRC]
