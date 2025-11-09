@@ -1,7 +1,7 @@
 ﻿using ModbusNet.Core;
 using System.IO.Ports;
 
-var factory = new ModbusFactory();
+//var factory = new ModbusFactory();
 
 SerialPort _serialPort = new SerialPort(
                     portName: "COM3",
@@ -15,6 +15,12 @@ SerialPort _serialPort = new SerialPort(
     Handshake = Handshake.None
 };
 
-var master = factory.CreateAsciiMaster(_serialPort);
+var master = ModbusFactory.CreateAsciiMaster(_serialPort);
 
-Console.WriteLine("Hello, World!");
+
+var resp = master.ReadHoldingRegisters(slaveId: 1, startAddress: 6500, numberOfPoints: 5);
+
+foreach (var reg in resp)
+{
+    Console.WriteLine(reg);
+}
