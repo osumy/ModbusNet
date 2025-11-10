@@ -24,6 +24,27 @@ namespace ModbusNet.Transport
         }
 
 
+        public ushort[] SendRequestWithRetry16A(byte[] request)
+        {
+            var retries = 3;
+            var delayBetweenRetriesMs = 100;
+
+            for (int attempt = 0; attempt <= retries; attempt++)
+            {
+                try
+                {
+                    return SendRequest(request);
+                }
+                catch (TimeoutException) when (attempt < retries)
+                {
+                    Thread.Sleep(delayBetweenRetriesMs);
+                }
+            }
+
+            throw new TimeoutException($"Request failed after {retries + 1} attempts");
+        }
+
+
         //public override byte[] BuildMessageFrame(IModbusMessage message)
         //{
         //    var msgFrame = message.MessageFrame;

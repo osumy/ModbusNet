@@ -5,6 +5,8 @@ namespace ModbusNet.Transport
     public interface IModbusTransport : IDisposable
     {
         ushort[] SendRequest(byte[] request);
+        ushort[] SendRequestWithRetry16A(byte[] request);
+
         bool IsConnected { get; }
         
 

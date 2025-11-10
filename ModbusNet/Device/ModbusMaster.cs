@@ -1,7 +1,7 @@
 ﻿using ModbusNet.Device.Validation;
 using ModbusNet.Messages;
-using ModbusNet.Messages.Requests;
 using ModbusNet.Transport;
+using ModbusNet.Utils;
 
 namespace ModbusNet.Device
 {
@@ -25,32 +25,23 @@ namespace ModbusNet.Device
         }
 
 
-        private ushort[] SendRequestWithRetry(byte[] request)
-        {
-            var retries = 3;
-            var delayBetweenRetriesMs = 100;
-
-            for (int attempt = 0; attempt <= retries; attempt++)
-            {
-                try
-                {
-                    return _transport.SendRequest(request);
-                }
-                catch (TimeoutException) when (attempt < retries)
-                {
-                    Thread.Sleep(delayBetweenRetriesMs);
-                }
-            }
-
-            throw new TimeoutException($"Request failed after {retries + 1} attempts");
-        }
-
-
         #region Bit Access - Discrete Inputs
 
         public bool[] ReadDiscreteInputs(byte slaveAddress, ushort startAddress, ushort numberOfPoints)
         {
-            throw new NotImplementedException();
+            Validate(ValidationType.ReadDiscreteInputs, numberOfPoints);
+
+            var pdu = ReadDiscreteInputsMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            var request = AsciiUtility.BuildAsciiFrame(
+                slaveAddress,
+                pdu,
+                _startDelimiterAsciiArray,
+                _endDelimiterAsciiArray
+                );
+
+            return null;
+            //return SendRequestWithRetry(request);
         }
 
         #endregion
@@ -59,17 +50,51 @@ namespace ModbusNet.Device
 
         public bool[] ReadCoils(byte slaveAddress, ushort startAddress, ushort numberOfPoints)
         {
-            throw new NotImplementedException();
+            Validate(ValidationType.ReadCoils, numberOfPoints);
+
+            var pdu = ReadCoilsMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            var request = AsciiUtility.BuildAsciiFrame(
+                slaveAddress,
+                pdu,
+                _startDelimiterAsciiArray,
+                _endDelimiterAsciiArray
+                );
+
+            return null;
+            //return SendRequestWithRetry(request);
         }
 
         public void WriteSingleCoil(byte slaveAddress, ushort coilAddress, bool value)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType., numberOfPoints);
+
+            //var pdu = WriteSingleCoilMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //return SendRequestWithRetry(request);
         }
 
         public void WriteMultipleCoils(byte slaveAddress, ushort startAddress, bool[] data)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType.WriteMultipleCoils, numberOfPoints);
+
+            //var pdu = WriteMultipleCoilsMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //return SendRequestWithRetry(request);
         }
 
         #endregion
@@ -78,7 +103,18 @@ namespace ModbusNet.Device
 
         public ushort[] ReadInputRegisters(byte slaveAddress, ushort startAddress, ushort numberOfPoints)
         {
-            throw new NotImplementedException();
+            Validate(ValidationType.ReadInputRegisters, numberOfPoints);
+
+            var pdu = ReadInputRegistersMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            var request = AsciiUtility.BuildAsciiFrame(
+                slaveAddress,
+                pdu,
+                _startDelimiterAsciiArray,
+                _endDelimiterAsciiArray
+                );
+
+            return _transport.SendRequestWithRetry16A(request);
         }
 
         #endregion
@@ -91,39 +127,97 @@ namespace ModbusNet.Device
 
             var pdu = ReadMultipleHoldingRegistersMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
-            var request = AsciiMessageSerializer.BuildAsciiFrame(
+            var request = AsciiUtility.BuildAsciiFrame(
                 slaveAddress,
                 pdu,
                 _startDelimiterAsciiArray,
                 _endDelimiterAsciiArray
                 );
 
-            return SendRequestWithRetry(request);
+            return _transport.SendRequestWithRetry16A(request);
         }
 
         public void WriteSingleHoldingRegister(byte slaveAddress, ushort registerAddress, ushort value)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType., numberOfPoints);
+
+            //var pdu = ReadMultipleHoldingRegistersMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //SendRequestWithRetry(request);
         }
 
         public void WriteMultipleHoldingRegisters(byte slaveAddress, ushort startAddress, ushort[] data)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType., numberOfPoints);
+
+            //var pdu = WriteMultipleHoldingRegistersMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //SendRequestWithRetry(request);
         }
 
         public ushort[] ReadWriteMultipleRegisters(byte slaveAddress, ushort startReadAddress, ushort numberOfPointsToRead, ushort startWriteAddress, ushort[] writeData)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType.ReadWriteMultipleRegisters, numberOfPoints);
+
+            //var pdu = ReadWriteMultipleRegistersMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //return SendRequestWithRetry(request);
+            return null;
         }
 
         public void MaskWriteRegister(byte slaveAddress, ushort registerAddress, ushort andMask, ushort orMask)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType., numberOfPoints);
+
+            //var pdu = MaskWriteRegisterMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //SendRequestWithRetry(request);
         }
 
         public ushort[] ReadFifoQueue(byte slaveAddress, ushort fifoPointerAddress)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType., numberOfPoints);
+
+            //var pdu = ReadMultipleHoldingRegistersMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //return SendRequestWithRetry(request);
+            return null;
+
         }
 
         #endregion
@@ -132,12 +226,35 @@ namespace ModbusNet.Device
 
         public byte[] ReadFileRecord(byte slaveAddress, ushort fileNumber, ushort startingAddress, ushort numberOfRegisters)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType., numberOfPoints);
+
+            //var pdu = ReadFileRecordMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //return SendRequestWithRetry(request);
+            return null;
         }
 
         public void WriteFileRecord(byte slaveAddress, ushort fileNumber, ushort startingAddress, byte[] data)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType.WriteFileRecord, numberOfPoints);
+
+            //var pdu = WriteFileRecordMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //return SendRequestWithRetry(request);
         }
 
         #endregion
@@ -146,27 +263,87 @@ namespace ModbusNet.Device
 
         public byte ReadExceptionStatus(byte slaveAddress)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType., numberOfPoints);
+
+            //var pdu = ReadExceptionStatusMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //return SendRequestWithRetry(request);
+            return 0;
         }
 
         public ushort[] Diagnostics(byte slaveAddress, ushort subFunctionCode, ushort[] data)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType., numberOfPoints);
+
+            //var pdu = DiagnosticsMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //return SendRequestWithRetry(request);
+            return null;
         }
 
         public (ushort Status, ushort EventCount) GetCommunicationEventCounter(byte slaveAddress)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType., numberOfPoints);
+
+            //var pdu = GetCommunicationEventCounterMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //return SendRequestWithRetry(request);
+            return (0, 0);
         }
 
         public (ushort Status, ushort EventCount, ushort MessageCount, byte[] Events) GetCommunicationEventLog(byte slaveAddress)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType., numberOfPoints);
+
+            //var pdu = GetCommunicationEventLogMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+                //);
+
+            //return SendRequestWithRetry(request);
+            return (0, 0, 0, null);
         }
 
         public byte[] ReportServerId(byte slaveAddress)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType., numberOfPoints);
+
+            //var pdu = ReportServerIdMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //return SendRequestWithRetry(request);
+            return null;
         }
 
         #endregion
@@ -175,7 +352,19 @@ namespace ModbusNet.Device
 
         public byte[] ReadDeviceIdentification(byte slaveAddress, byte objectId, byte meiType)
         {
-            throw new NotImplementedException();
+            //Validate(ValidationType., numberOfPoints);
+
+            //var pdu = ReadDeviceIdentificationMessage.BuildRequestPDU(startAddress, numberOfPoints);
+
+            //var request = AsciiUtility.BuildAsciiFrame(
+            //    slaveAddress,
+            //    pdu,
+            //    _startDelimiterAsciiArray,
+            //    _endDelimiterAsciiArray
+            //    );
+
+            //return SendRequestWithRetry(request);
+            return null;
         }
 
         #endregion

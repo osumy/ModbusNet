@@ -115,5 +115,9 @@ namespace ModbusNet.Transport
             throw new NotImplementedException();
         }
 
+        public ushort[] SendRequestWithRetry16A(byte[] request)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
