@@ -13,17 +13,17 @@ namespace ModbusNet
 
 
         #region Serial Port Settings
-        public TimeSpan Timeout
+        public int Timeout
         {
-            get => responseTimeout;
+            get => ReadTimeout;
             set
             {
-                responseTimeout = value;
-                requestTimeout = value;
+                ReadTimeout = value;
+                WriteTimeout = value;
             }
         }
-        public TimeSpan responseTimeout { get; set; } = TimeSpan.FromSeconds(2);
-        public TimeSpan requestTimeout { get; set; } = TimeSpan.FromSeconds(2);
+        public int ReadTimeout { get; set; } = 2000;
+        public int WriteTimeout { get; set; } = 2000;
 
         public PortName PortName { get; set; } = PortName.COM3;
         public int BaudRate { get; set; } = 9600;
