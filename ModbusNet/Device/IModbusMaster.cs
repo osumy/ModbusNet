@@ -11,6 +11,7 @@
         /// <param name="slaveAddress">Address of device to read values from.</param>
         /// <param name="startAddress">Address to begin reading.</param>
         /// <param name="numberOfPoints">Number of discrete inputs to read.</param>
+        /// <exception cref="ArgumentException"></exception>
         /// <returns>Discrete inputs status as boolean array.</returns>
         bool[] ReadDiscreteInputs(byte slaveAddress, ushort startAddress, ushort numberOfPoints);
 
@@ -25,6 +26,7 @@
         /// <param name="slaveAddress">Address of device to read values from.</param>
         /// <param name="startAddress">Address to begin reading.</param>
         /// <param name="numberOfPoints">Number of coils to read.</param>
+        /// <exception cref="ArgumentException"></exception>
         /// <returns>Coils status as boolean array.</returns>
         bool[] ReadCoils(byte slaveAddress, ushort startAddress, ushort numberOfPoints);
 
@@ -57,6 +59,7 @@
         /// <param name="slaveAddress">Address of device to read values from.</param>
         /// <param name="startAddress">Address to begin reading.</param>
         /// <param name="numberOfPoints">Number of input registers to read.</param>
+        /// <exception cref="ArgumentException"></exception>
         /// <returns>Input registers values.</returns>
         ushort[] ReadInputRegisters(byte slaveAddress, ushort startAddress, ushort numberOfPoints);
 
@@ -71,6 +74,7 @@
         /// <param name="slaveAddress">Address of device to read values from.</param>
         /// <param name="startAddress">Address to begin reading.</param>
         /// <param name="numberOfPoints">Number of holding registers to read.</param>
+        /// <exception cref="ArgumentException"></exception>
         /// <returns>Holding registers values.</returns>
         ushort[] ReadMultipleHoldingRegisters(byte slaveAddress, ushort startAddress, ushort numberOfPoints);
 
@@ -102,6 +106,7 @@
         /// <param name="numberOfPointsToRead">Number of registers to read.</param>
         /// <param name="startWriteAddress">Address to begin writing (Holding registers are addressed starting at 0).</param>
         /// <param name="writeData">Register values to write.</param>
+        /// <exception cref="ArgumentException"></exception>
         /// <returns>Read holding registers values.</returns>
         ushort[] ReadWriteMultipleRegisters(
             byte slaveAddress,
