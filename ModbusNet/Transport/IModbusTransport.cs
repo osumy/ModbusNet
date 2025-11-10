@@ -7,17 +7,6 @@ namespace ModbusNet.Transport
         ushort[] SendRequest(byte[] request);
         bool IsConnected { get; }
 
-        //int Retries { get; set; }
-
-        //uint RetryOnOldResponseThreshold { get; set; }
-
-        //bool SlaveBusyUsesRetryCount { get; set; }
-
-        //int WaitToRetryMilliseconds { get; set; }
-
-        //int ReadTimeout { get; set; }
-
-        //int WriteTimeout { get; set; }
 
         //T UnicastMessage<T>(IModbusMessage message) where T : IModbusMessage, new();
 

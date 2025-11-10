@@ -1,8 +1,6 @@
-﻿using ModbusNet;
-using ModbusNet.Messages;
+﻿using ModbusNet.Messages;
 using ModbusNet.Utils;
 using System.IO.Ports;
-using System.Runtime;
 using System.Text;
 
 namespace ModbusNet.Transport
