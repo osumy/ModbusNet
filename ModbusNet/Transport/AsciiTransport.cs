@@ -2,6 +2,7 @@
 using ModbusNet.Messages;
 using ModbusNet.Utils;
 using System.IO.Ports;
+using System.Runtime;
 using System.Text;
 
 namespace ModbusNet.Transport
@@ -9,39 +10,21 @@ namespace ModbusNet.Transport
     public class AsciiTransport : IModbusTransport
     {
         private readonly SerialPort _serialPort;
-        //private readonly ASCIIEncoding _encoding = new ASCIIEncoding();
+        private readonly ModbusSettings _settings;
 
         public bool IsConnected => _serialPort.IsOpen;
         private bool _disposed = false;
 
-        // used by the ASCII tranport to indicate end of message
-        public const string NewLine = "\r\n";
 
-        private int length;
-
-
-        public AsciiTransport(SerialPort serialPort)
+        public AsciiTransport(SerialPort serialPort, ModbusSettings settings)
         {
             _serialPort = serialPort;
-
-            Connect();
-        }
-
-        public void Connect()
-        {
-            ThrowIfDisposed();
+            _settings = settings;
 
             if (!_serialPort.IsOpen)
                 _serialPort.Open();
         }
 
-        public void Disconnect()
-        {
-            ThrowIfDisposed();
-
-            if (_serialPort.IsOpen)
-                _serialPort.Close();
-        }
 
         //public override byte[] BuildMessageFrame(IModbusMessage message)
         //{
@@ -63,15 +46,15 @@ namespace ModbusNet.Transport
         {
             var msgFrameAscii = AsciiUtility.ToAsciiBytes(msgFrame);
             var lrcAscii = AsciiUtility.ToAsciiBytes(ErrorCheckUtility.ComputeLrc(msgFrame));
-            var nlAscii = Encoding.UTF8.GetBytes(NewLine.ToCharArray());
+            var edAscii = Encoding.UTF8.GetBytes(_settings.AsciiEndDelimiter.ToCharArray());
+            var stAscii = Encoding.UTF8.GetBytes(_settings.AsciiStartDelimiter.ToCharArray());
 
-            var frame = new MemoryStream(1 + msgFrameAscii.Length + lrcAscii.Length + nlAscii.Length);
-            frame.WriteByte((byte)':');
+            var frame = new MemoryStream(stAscii.Length + msgFrameAscii.Length + lrcAscii.Length + edAscii.Length);
+            frame.Write(stAscii, 0, stAscii.Length);
             frame.Write(msgFrameAscii, 0, msgFrameAscii.Length);
             frame.Write(lrcAscii, 0, lrcAscii.Length);
-            frame.Write(nlAscii, 0, nlAscii.Length);
+            frame.Write(edAscii, 0, edAscii.Length);
 
-            length = (int)frame.Length;
             return frame.ToArray();
         }
 
@@ -126,7 +109,7 @@ namespace ModbusNet.Transport
 
             var asciiFrame = BuildFrame(request);
 
-            _serialPort.Write(asciiFrame, 0, length);
+            _serialPort.Write(asciiFrame, 0, asciiFrame.Length);
             var response = ReceiveResponse();
 
             return ParseReadHoldingRegisters(response);
