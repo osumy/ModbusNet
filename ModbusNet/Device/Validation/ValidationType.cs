@@ -9,6 +9,7 @@
         WriteMultipleCoils,
         WriteMultipleRegisters,
         ReadWriteMultipleRegisters,
-        WriteFileRecord
+        WriteFileRecord,
+        WriteSingleCoil
     }
 }

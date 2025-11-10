@@ -67,7 +67,7 @@ namespace ModbusNet.Device
 
         public void WriteSingleCoil(byte slaveAddress, ushort coilAddress, bool value)
         {
-            //Validate(ValidationType., numberOfPoints);
+            Validate(ValidationType.WriteSingleCoil, value);
 
             //var pdu = WriteSingleCoilMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
@@ -378,7 +378,7 @@ namespace ModbusNet.Device
         /// <param name="numberOfPoints">The number of points to read/write.</param>
         /// <param name="data">The data array to validate (optional).</param>
         /// <param name="argumentName">The name of the argument being validated.</param>
-        protected void Validate(ValidationType validationType, ushort numberOfPoints = 0, Array data = null)
+        protected void Validate(ValidationType validationType, ushort data16 = 0, Array data = null)
         {
             ThrowIfDisposed();
 
@@ -386,12 +386,12 @@ namespace ModbusNet.Device
             {
                 case ValidationType.ReadCoils:
                 case ValidationType.ReadDiscreteInputs:
-                    ValidateNumberOfPoints(numberOfPoints, ValidationLimits.MaxReadCoils);
+                    ValidateNumberOfPoints(data16, ValidationLimits.MaxReadCoils);
                     break;
 
                 case ValidationType.ReadMultipleHoldingRegisters:
                 case ValidationType.ReadInputRegisters:
-                    ValidateNumberOfPoints(numberOfPoints, ValidationLimits.MaxReadMultipleHoldingRegisters);
+                    ValidateNumberOfPoints(data16, ValidationLimits.MaxReadMultipleHoldingRegisters);
                     break;
 
                 case ValidationType.WriteMultipleCoils:
@@ -403,7 +403,7 @@ namespace ModbusNet.Device
                     break;
 
                 case ValidationType.ReadWriteMultipleRegisters:
-                    ValidateNumberOfPoints(numberOfPoints, ValidationLimits.MaxReadWriteMultipleRegistersRead);
+                    ValidateNumberOfPoints(data16, ValidationLimits.MaxReadWriteMultipleRegistersRead);
                     if (data != null)
                     {
                         ValidateData(data, ValidationLimits.MaxReadWriteMultipleRegistersWrite);
