@@ -2,6 +2,7 @@
 using ModbusNet.Messages;
 using ModbusNet.Utils;
 using System.IO.Ports;
+using System.Runtime;
 using System.Text;
 
 namespace ModbusNet.Transport
@@ -9,39 +10,21 @@ namespace ModbusNet.Transport
     public class AsciiTransport : IModbusTransport
     {
         private readonly SerialPort _serialPort;
-        //private readonly ASCIIEncoding _encoding = new ASCIIEncoding();
+        private readonly ModbusSettings _modbusSettings;
 
         public bool IsConnected => _serialPort.IsOpen;
         private bool _disposed = false;
 
-        // used by the ASCII tranport to indicate end of message
-        public const string NewLine = "\r\n";
 
-        private int length;
-
-
-        public AsciiTransport(SerialPort serialPort)
+        public AsciiTransport(SerialPort serialPort, ModbusSettings modbusSettings)
         {
             _serialPort = serialPort;
-
-            Connect();
-        }
-
-        public void Connect()
-        {
-            ThrowIfDisposed();
+            _modbusSettings = modbusSettings;
 
             if (!_serialPort.IsOpen)
                 _serialPort.Open();
         }
 
-        public void Disconnect()
-        {
-            ThrowIfDisposed();
-
-            if (_serialPort.IsOpen)
-                _serialPort.Close();
-        }
 
         //public override byte[] BuildMessageFrame(IModbusMessage message)
         //{

@@ -6,8 +6,6 @@ namespace ModbusNet.Transport
     {
         ushort[] SendRequest(byte[] request);
         bool IsConnected { get; }
-        void Connect();
-        void Disconnect();
 
         //int Retries { get; set; }
 
