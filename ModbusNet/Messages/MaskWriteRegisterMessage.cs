@@ -1,6 +1,6 @@
 ﻿namespace ModbusNet.Messages
 {
-    internal class AbstractModbusMessage
+    internal class MaskWriteRegisterMessage
     {
     }
 }

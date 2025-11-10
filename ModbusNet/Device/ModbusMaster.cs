@@ -1,4 +1,5 @@
 ﻿using ModbusNet.Device.Validation;
+using ModbusNet.Messages;
 using ModbusNet.Messages.Requests;
 using ModbusNet.Transport;
 
@@ -78,6 +79,8 @@ namespace ModbusNet.Device
         public ushort[] ReadMultipleHoldingRegisters(byte slaveAddress, ushort startAddress, ushort numberOfPoints)
         {
             Validate(ValidationType.ReadMultipleHoldingRegisters, numberOfPoints);
+
+            var pdu = ReadMultipleHoldingRegistersMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
             var request = new ReadHoldingRegistersRequest(0x03, slaveAddress, startAddress, numberOfPoints);
 
