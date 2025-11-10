@@ -7,7 +7,7 @@ namespace ModbusNet.Device
     /// <summary>
     ///     Modbus master device
     /// </summary>
-    public class ModbusMaster : IDisposable
+    public class ModbusMaster : IModbusMaster
     {
         private readonly IModbusTransport _transport;
         private bool _disposed = false;
@@ -16,42 +16,6 @@ namespace ModbusNet.Device
         {
             _transport = transport;
         }
-
-        ///// <summary>
-        /////    Reads from 1 to 2000 contiguous coils status.
-        ///// </summary>
-        ///// <param name="slaveAddress">Address of device to read values from.</param>
-        ///// <param name="startAddress">Address to begin reading.</param>
-        ///// <param name="numberOfPoints">Number of coils to read.</param>
-        ///// <returns>Coils status.</returns>
-        //public bool[] ReadCoils(byte slaveId, ushort startAddress, ushort numberOfPoints)
-        //{
-        //    ThrowIfDisposed();
-
-        //    //ValidateNumberOfPoints("numberOfPoints", numberOfPoints, 2000);
-
-        //    var request = new ReadCoilsRequest(slaveId, startAddress, numberOfPoints);
-        //    //var responseData = SendRequestWithRetry(request.Serialize());
-        //    //var response = ReadCoilsResponse.Deserialize(slaveId, responseData);
-        //    //return response.Coils.Take(numberOfPoints).ToArray();
-        //    return Array.Empty<bool>();
-        //}
-
-        //public bool ReadCoil(byte slaveId, ushort address)
-        //{
-        //    var coils = ReadCoils(slaveId, address, 1);
-        //    return coils[0];
-        //}
-
-        //public void WriteCoil(byte slaveId, ushort address, bool value)
-        //{
-        //    var request = new WriteCoilRequest(slaveId, address, value);
-        //    var responseData = SendRequestWithRetry(request.Serialize());
-        //    var response = WriteCoilResponse.Deserialize(slaveId, responseData);
-
-        //    if (response.Address != address || response.Value != value)
-        //        throw new InvalidOperationException("Write coil verification failed");
-        //}
 
         /// <summary>
         ///    Reads contiguous block of holding registers.

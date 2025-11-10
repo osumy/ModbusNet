@@ -8,11 +8,14 @@ namespace ModbusNet
         public static ModbusSettings Default => new ModbusSettings();
 
         #region General Settings
+
         public byte retryCount { get; set; } = 3;
         public int retryDelayMs { get; set; } = 50;
+
         #endregion
 
         #region Serial Port Settings
+
         public int Timeout
         {
             get => ReadTimeout;
@@ -30,15 +33,19 @@ namespace ModbusNet
         public Parity Parity { get; set; } = Parity.Even;
         public DataBits DataBits { get; set; } = DataBits.db7;
         public StopBits StopBits { get; set; } = StopBits.One;
+
         #endregion
 
         #region ASCII/RTU Specific Settings
+
         public string AsciiStartDelimiter { get; set; } = ":";
         public string AsciiEndDelimiter { get; set; } = "\r\n";
 
 
         public int RtuInterCharTimeoutMs { get; set; } = 2;
         public int RtuInterFrameTimeoutMs { get; set; } = 5;
+
+
         #endregion
     }
 }

@@ -30,14 +30,14 @@
         Read_File_Record = 0x14,
         Write_File_Record = 0x15,
 
-        //// Diagnostics ////
-        Read_Exception_Status = 0x07,       // Serial Only
-        Diagnostics = 0x08,                 // Serial Only
+        //// Diagnostics (Serial Only) ////
+        Read_Exception_Status = 0x07,       
+        Diagnostics = 0x08,                 
+        Get_Com_Event_Counter = 0x0B,      
+        Get_Com_Event_Log = 0x0C,           
+        Report_Server_ID = 0x11,            
 
         //// Other Function Codes //// 
-        Get_Com_Event_Counter = 0x0B,       // Serial Only
-        Get_Com_Event_Log = 0x0C,           // Serial Only
-        Report_Server_ID = 0x11,            // Serial Only
         Read_Device_Identification = 0x2B
     }
 
