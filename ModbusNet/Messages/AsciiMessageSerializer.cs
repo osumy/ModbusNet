@@ -7,58 +7,48 @@ namespace ModbusNet.Messages
 {
     public sealed class AsciiMessageSerializer
     {
-        private static readonly byte Colon = (byte)':';
-        private static readonly byte Cr = (byte)'\r';
-        private static readonly byte Lf = (byte)'\n';
-
-        //public void WriteAsciiFrame(ModbusMessage message, IBufferWriter<byte> writer)
-        //{
-        //    // Build raw payload: UnitId, FunctionCode, Data...
-        //    int payloadLen = 2 + message.Data.Length; // unit + function + payload
-        //    Span<byte> payload = payloadLen <= 256 ? stackalloc byte[payloadLen] : new byte[payloadLen];
-        //    payload[0] = message.UnitId;
-        //    payload[1] = message.FunctionCode;
-        //    message.Data.Span.CopyTo(payload.Slice(2));
-
-        //    byte lrc = ErrorCheckUtility.ComputeLrc(payload);
-
-        //    // Convert payload + LRC to hex ASCII
-        //    int hexLen = (payloadLen + 1) * 2; // +1 for LRC, 2 chars per byte
-        //    // Reserve enough space: ':' + hex + CRLF
-        //    var span = writer.GetSpan(1 + hexLen + 2);
-        //    int pos = 0;
-        //    span[pos++] = Colon;
-        //    //AsciiUtility.EncodeHex(payload, span.Slice(pos, payloadLen * 2));
-        //    pos += payloadLen * 2;
-        //    //AsciiUtility.EncodeHex(new ReadOnlySpan<byte>(new[] { lrc }), span.Slice(pos, 2));
-        //    pos += 2;
-        //    span[pos++] = Cr;
-        //    span[pos++] = Lf;
-        //    writer.Advance(pos);
-        //}
-
         public static byte[] BuildAsciiFrame(byte slaveAddress, byte[] pdu, byte[] startDelimiter, byte[] endDelimiter)
         {
             // Create the message frame: slave address + PDU
             var messageFrame = new byte[1 + pdu.Length];
             messageFrame[0] = slaveAddress;
             Array.Copy(pdu, 0, messageFrame, 1, pdu.Length);
-            var msgFrameAscii = AsciiUtility.ToAsciiBytes(messageFrame);
 
-            // Compute LRC for the entire message frame
+            var msgFrameAscii = AsciiUtility.ToAsciiBytes(messageFrame);
             var lrcAscii = AsciiUtility.ToAsciiBytes(ErrorCheckUtility.ComputeLrc(messageFrame));
 
-            var stAscii = AsciiUtility.ToAsciiBytes(startDelimiter);
-            var edAscii = AsciiUtility.ToAsciiBytes(endDelimiter);
-
             // Convert to ASCII: ':' + hex chars of messageFrame + hex chars of LRC + CRLF
-            var frame = new MemoryStream(stAscii.Length + msgFrameAscii.Length + lrcAscii.Length + edAscii.Length);
-            frame.Write(stAscii, 0, stAscii.Length);
+            var frame = new MemoryStream(startDelimiter.Length + msgFrameAscii.Length + lrcAscii.Length + endDelimiter.Length);
+            frame.Write(startDelimiter, 0, startDelimiter.Length);
             frame.Write(msgFrameAscii, 0, msgFrameAscii.Length);
             frame.Write(lrcAscii, 0, lrcAscii.Length);
-            frame.Write(edAscii, 0, edAscii.Length);
+            frame.Write(endDelimiter, 0, endDelimiter.Length);
 
             return frame.ToArray();
+        }
+
+        public static byte[] BuildAsciiFrame2(byte slaveAddress, byte[] pdu, byte[] startDelimiter, byte[] endDelimiter)
+        {
+            // Create the message frame: slave address + PDU
+            var messageFrame = new byte[1 + pdu.Length];
+            messageFrame[0] = slaveAddress;
+            Array.Copy(pdu, 0, messageFrame, 1, pdu.Length);
+
+            // Convert entire message frame to ASCII hex string first
+            var hexString = BitConverter.ToString(messageFrame).Replace("-", "");
+
+            // Compute LRC on the raw message frame bytes
+            byte lrc = ErrorCheckUtility.ComputeLrc(messageFrame);
+            var lrcHex = lrc.ToString("X2");
+
+            // Build the complete ASCII frame
+            var frameBuilder = new System.Text.StringBuilder();
+            frameBuilder.Append(Encoding.ASCII.GetString(startDelimiter)); // ":"
+            frameBuilder.Append(hexString);                                // Message data as hex
+            frameBuilder.Append(lrcHex);                                   // LRC as hex
+            frameBuilder.Append(Encoding.ASCII.GetString(endDelimiter));   // "\r\n"
+
+            return Encoding.ASCII.GetBytes(frameBuilder.ToString());
         }
 
         //public bool TryParseAsciiFrame(ReadOnlySequence<byte> buffer, out ModbusMessage? message, out SequencePosition consumed)

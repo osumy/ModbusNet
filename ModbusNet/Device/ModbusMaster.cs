@@ -10,12 +10,18 @@ namespace ModbusNet.Device
         private readonly IModbusTransport _transport;
         private readonly ModbusSettings _settings;
 
+        byte[] _startDelimiterAsciiArray;
+        byte[] _endDelimiterAsciiArray;
+
         private bool _disposed = false;
 
         public ModbusMaster(IModbusTransport transport, ModbusSettings settings)
         {
             _transport = transport;
             _settings = settings;
+
+            _startDelimiterAsciiArray = System.Text.Encoding.ASCII.GetBytes(_settings.AsciiStartDelimiter);
+            _endDelimiterAsciiArray = System.Text.Encoding.ASCII.GetBytes(_settings.AsciiEndDelimiter);
         }
 
 
@@ -85,13 +91,11 @@ namespace ModbusNet.Device
 
             var pdu = ReadMultipleHoldingRegistersMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
-            //var request = new ReadHoldingRegistersRequest(0x03, slaveAddress, startAddress, numberOfPoints);
-            //request.Serialize();
             var request = AsciiMessageSerializer.BuildAsciiFrame(
                 slaveAddress,
                 pdu,
-                System.Text.Encoding.ASCII.GetBytes(_settings.AsciiStartDelimiter),
-                System.Text.Encoding.ASCII.GetBytes(_settings.AsciiEndDelimiter)
+                _startDelimiterAsciiArray,
+                _endDelimiterAsciiArray
                 );
 
             return SendRequestWithRetry(request);
