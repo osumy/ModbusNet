@@ -93,6 +93,8 @@ namespace ModbusNet.Device
 
         public ushort[] ReadMultipleHoldingRegisters(byte slaveAddress, ushort startAddress, ushort numberOfPoints)
         {
+            Validate(ValidationType.ReadMultipleHoldingRegisters, numberOfPoints);
+
             throw new NotImplementedException();
         }
 
@@ -184,7 +186,7 @@ namespace ModbusNet.Device
         /// <param name="numberOfPoints">The number of points to read/write.</param>
         /// <param name="data">The data array to validate (optional).</param>
         /// <param name="argumentName">The name of the argument being validated.</param>
-        protected void Validate(ValidationType validationType, ushort numberOfPoints = 0, Array data = null, string argumentName = "data")
+        protected void Validate(ValidationType validationType, ushort numberOfPoints = 0, Array data = null)
         {
             ThrowIfDisposed();
 
@@ -192,32 +194,32 @@ namespace ModbusNet.Device
             {
                 case ValidationType.ReadCoils:
                 case ValidationType.ReadDiscreteInputs:
-                    ValidateNumberOfPoints(argumentName, numberOfPoints, ValidationLimits.MaxReadCoils);
+                    ValidateNumberOfPoints(numberOfPoints, ValidationLimits.MaxReadCoils);
                     break;
 
-                case ValidationType.ReadHoldingRegisters:
+                case ValidationType.ReadMultipleHoldingRegisters:
                 case ValidationType.ReadInputRegisters:
-                    ValidateNumberOfPoints(argumentName, numberOfPoints, ValidationLimits.MaxReadHoldingRegisters);
+                    ValidateNumberOfPoints(numberOfPoints, ValidationLimits.MaxReadMultipleHoldingRegisters);
                     break;
 
                 case ValidationType.WriteMultipleCoils:
-                    ValidateData(argumentName, data, ValidationLimits.MaxWriteMultipleCoils);
+                    ValidateData(data, ValidationLimits.MaxWriteMultipleCoils);
                     break;
 
                 case ValidationType.WriteMultipleRegisters:
-                    ValidateData(argumentName, data, ValidationLimits.MaxWriteMultipleRegisters);
+                    ValidateData(data, ValidationLimits.MaxWriteMultipleRegisters);
                     break;
 
                 case ValidationType.ReadWriteMultipleRegisters:
-                    ValidateNumberOfPoints("numberOfPointsToRead", numberOfPoints, ValidationLimits.MaxReadWriteMultipleRegistersRead);
+                    ValidateNumberOfPoints(numberOfPoints, ValidationLimits.MaxReadWriteMultipleRegistersRead);
                     if (data != null)
                     {
-                        ValidateData("writeData", data, ValidationLimits.MaxReadWriteMultipleRegistersWrite);
+                        ValidateData(data, ValidationLimits.MaxReadWriteMultipleRegistersWrite);
                     }
                     break;
 
                 case ValidationType.WriteFileRecord:
-                    ValidateMaxData(argumentName, data, ValidationLimits.MaxWriteFileRecord);
+                    ValidateMaxData(data, ValidationLimits.MaxWriteFileRecord);
                     break;
 
                 default:
@@ -225,7 +227,7 @@ namespace ModbusNet.Device
             }
         }
 
-        private static void ValidateData(string argumentName, Array data, int maxDataLength)
+        private static void ValidateData(Array data, int maxDataLength)
         {
             if (data == null)
             {
@@ -234,12 +236,12 @@ namespace ModbusNet.Device
 
             if (data.Length == 0 || data.Length > maxDataLength)
             {
-                string msg = $"The length of argument {argumentName} must be between 1 and {maxDataLength} inclusive.";
+                string msg = $"The length of argument data must be between 1 and {maxDataLength} inclusive.";
                 throw new ArgumentException(msg);
             }
         }
 
-        private static void ValidateMaxData(string argumentName, Array data, int maxDataLength)
+        private static void ValidateMaxData(Array data, int maxDataLength)
         {
             if (data == null)
             {
@@ -248,16 +250,16 @@ namespace ModbusNet.Device
 
             if (data.Length > maxDataLength)
             {
-                string msg = $"The length of argument {argumentName} must not be greater than {maxDataLength}.";
+                string msg = $"The length of argument data must not be greater than {maxDataLength}.";
                 throw new ArgumentException(msg);
             }
         }
 
-        private static void ValidateNumberOfPoints(string argumentName, ushort numberOfPoints, ushort maxNumberOfPoints)
+        private static void ValidateNumberOfPoints(ushort numberOfPoints, ushort maxNumberOfPoints)
         {
             if (numberOfPoints < 1 || numberOfPoints > maxNumberOfPoints)
             {
-                string msg = $"Argument {argumentName} must be between 1 and {maxNumberOfPoints} inclusive.";
+                string msg = $"Argument numberOfPoints must be between 1 and {maxNumberOfPoints} inclusive.";
                 throw new ArgumentException(msg);
             }
         }

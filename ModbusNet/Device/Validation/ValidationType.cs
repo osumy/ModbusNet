@@ -4,7 +4,7 @@
     {
         ReadCoils,
         ReadDiscreteInputs,
-        ReadHoldingRegisters,
+        ReadMultipleHoldingRegisters,
         ReadInputRegisters,
         WriteMultipleCoils,
         WriteMultipleRegisters,
