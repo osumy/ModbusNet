@@ -1,6 +1,6 @@
 ﻿namespace ModbusNet.Messages
 {
-    public class ModbusResponse
+    internal class DiagnosticsMessage
     {
     }
 }

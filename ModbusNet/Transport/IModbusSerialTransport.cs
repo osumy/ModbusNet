@@ -8,7 +8,7 @@ namespace ModbusNet.Transport
 
         bool CheckFrame { get; set; }
 
-        bool ChecksumsMatch(IModbusMessage message, byte[] messageFrame);
+        //bool ChecksumsMatch(IModbusMessage message, byte[] messageFrame);
 
         void IgnoreResponse();
     }

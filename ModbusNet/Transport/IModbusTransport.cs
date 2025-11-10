@@ -6,7 +6,7 @@ namespace ModbusNet.Transport
     {
         ushort[] SendRequest(byte[] request);
         bool IsConnected { get; }
-
+        
 
         //T UnicastMessage<T>(IModbusMessage message) where T : IModbusMessage, new();
 

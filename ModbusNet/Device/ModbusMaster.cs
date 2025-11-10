@@ -1,4 +1,5 @@
 ﻿using ModbusNet.Device.Validation;
+using ModbusNet.Messages;
 using ModbusNet.Messages.Requests;
 using ModbusNet.Transport;
 
@@ -7,11 +8,20 @@ namespace ModbusNet.Device
     public class ModbusMaster : IModbusMaster
     {
         private readonly IModbusTransport _transport;
+        private readonly ModbusSettings _settings;
+
+        byte[] _startDelimiterAsciiArray;
+        byte[] _endDelimiterAsciiArray;
+
         private bool _disposed = false;
 
-        public ModbusMaster(IModbusTransport transport)
+        public ModbusMaster(IModbusTransport transport, ModbusSettings settings)
         {
             _transport = transport;
+            _settings = settings;
+
+            _startDelimiterAsciiArray = System.Text.Encoding.ASCII.GetBytes(_settings.AsciiStartDelimiter);
+            _endDelimiterAsciiArray = System.Text.Encoding.ASCII.GetBytes(_settings.AsciiEndDelimiter);
         }
 
 
@@ -79,11 +89,16 @@ namespace ModbusNet.Device
         {
             Validate(ValidationType.ReadMultipleHoldingRegisters, numberOfPoints);
 
-            var request = new ReadHoldingRegistersRequest(0x03, slaveAddress, startAddress, numberOfPoints);
+            var pdu = ReadMultipleHoldingRegistersMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
-            request.Serialize();
-            var responseData = SendRequestWithRetry(request.MessageFrame);
-            return responseData;
+            var request = AsciiMessageSerializer.BuildAsciiFrame(
+                slaveAddress,
+                pdu,
+                _startDelimiterAsciiArray,
+                _endDelimiterAsciiArray
+                );
+
+            return SendRequestWithRetry(request);
         }
 
         public void WriteSingleHoldingRegister(byte slaveAddress, ushort registerAddress, ushort value)

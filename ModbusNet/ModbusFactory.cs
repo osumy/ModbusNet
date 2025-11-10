@@ -10,14 +10,14 @@ namespace ModbusNet
         {
             var serialPort = CreateSerialPort(modbusSettings);
             var transport = new RtuTransport(serialPort, modbusSettings);
-            return new ModbusMaster(transport);
+            return new ModbusMaster(transport, modbusSettings);
         }
 
         public static ModbusMaster CreateAsciiMaster(ModbusSettings modbusSettings)
         {
             var serialPort = CreateSerialPort(modbusSettings);
             var transport = new AsciiTransport(serialPort, modbusSettings);
-            return new ModbusMaster(transport);
+            return new ModbusMaster(transport, modbusSettings);
         }
 
         private static SerialPort CreateSerialPort(ModbusSettings modbusSettings)
