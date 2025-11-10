@@ -7,10 +7,10 @@ namespace ModbusNet
     {
         public static ModbusSettings Default => new ModbusSettings();
 
-
+        #region General Settings
         public byte retryCount { get; set; } = 3;
         public int retryDelayMs { get; set; } = 50;
-
+        #endregion
 
         #region Serial Port Settings
         public int Timeout

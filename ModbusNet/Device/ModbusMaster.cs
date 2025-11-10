@@ -1,6 +1,5 @@
 ﻿using ModbusNet.Messages.Requests;
-using ModbusNet.Messages.Responses;
-using ModbusNet.Messages.Responses.ModbusNet.Messages.Responses;
+
 using ModbusNet.Transport;
 
 namespace ModbusNet.Device

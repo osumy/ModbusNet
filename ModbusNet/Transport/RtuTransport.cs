@@ -7,16 +7,16 @@ namespace ModbusNet.Transport
     public class RtuTransport : IModbusTransport
     {
         private readonly SerialPort _serialPort;
-        private readonly ModbusSettings _modbusSettings;
+        private readonly ModbusSettings _settings;
 
         public bool IsConnected => _serialPort.IsOpen;
         private bool _disposed = false;
 
 
-        public RtuTransport(SerialPort serialPort, ModbusSettings modbusSettings)
+        public RtuTransport(SerialPort serialPort, ModbusSettings settings)
         {
             _serialPort = serialPort;
-            _modbusSettings = modbusSettings;
+            _settings = settings;
 
             if (!_serialPort.IsOpen)
                 _serialPort.Open();
@@ -25,6 +25,7 @@ namespace ModbusNet.Transport
 
         public byte[] SendRequest(byte[] request)
         {
+            ThrowIfDisposed();
             //// اضافه کردن CRC
             //var crc = ErrorCheckCalculator.ComputeCrc(request);
             //var frame = new byte[request.Length + 2];
@@ -94,9 +95,19 @@ namespace ModbusNet.Transport
             }
         }
 
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
+        }
+
         public void Dispose()
         {
-            _serialPort?.Dispose();
+            if (!_disposed)
+            {
+                _serialPort?.Dispose();
+                _disposed = true;
+            }
         }
 
         ushort[] IModbusTransport.SendRequest(byte[] request)
