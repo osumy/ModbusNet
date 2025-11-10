@@ -93,5 +93,53 @@
 
             throw new ArgumentException($"Invalid hex character: {(char)hexChar}");
         }
+
+        /// <summary>
+        /// Constructs a complete Modbus ASCII protocol frame from the given components.
+        /// </summary>
+        /// <param name="slaveAddress">The address of the target slave device (1-247).</param>
+        /// <param name="pdu">The Protocol Data Unit containing the function code and parameters.</param>
+        /// <param name="startDelimiter">The ASCII start delimiter byte array (typically colon ':' character).</param>
+        /// <param name="endDelimiter">The ASCII end delimiter byte array (typically carriage return + line feed "\r\n").</param>
+        /// <returns>A complete Modbus ASCII frame as a byte array ready for transmission.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="pdu"/>, <paramref name="startDelimiter"/>, or <paramref name="endDelimiter"/> is null.</exception>
+        /// <remarks>
+        /// <para>
+        /// The frame structure is as follows:
+        /// <code>
+        /// [Start Delimiter] + [Message Frame as Hex ASCII] + [LRC as Hex ASCII] + [End Delimiter]
+        /// </code>
+        /// </para>
+        /// <para>
+        /// The message frame consists of the slave address followed by the Protocol Data Unit (PDU).
+        /// Each byte in the message frame is converted to two ASCII characters representing its hexadecimal value.
+        /// </para>
+        /// <para>
+        /// Longitudinal Redundancy Check (LRC) is computed on the raw binary message frame and appended
+        /// as two ASCII hexadecimal characters to provide error detection.
+        /// </para>
+        /// <para>
+        /// The resulting frame uses only valid Modbus ASCII characters (0-9, A-F).
+        /// </para>
+        /// </remarks>
+        public static byte[] BuildAsciiFrame(byte slaveAddress, byte[] pdu, byte[] startDelimiter, byte[] endDelimiter)
+        {
+            // Create the message frame: slave address + PDU
+            var messageFrame = new byte[1 + pdu.Length];
+            messageFrame[0] = slaveAddress;
+            Array.Copy(pdu, 0, messageFrame, 1, pdu.Length);
+
+            var msgFrameAscii = AsciiUtility.ToAsciiBytes(messageFrame);
+            var lrcAscii = AsciiUtility.ToAsciiBytes(ErrorCheckUtility.ComputeLrc(messageFrame));
+
+            // Convert to ASCII: ':' + hex chars of messageFrame + hex chars of LRC + CRLF
+            var frame = new MemoryStream(startDelimiter.Length + msgFrameAscii.Length + lrcAscii.Length + endDelimiter.Length);
+            frame.Write(startDelimiter, 0, startDelimiter.Length);
+            frame.Write(msgFrameAscii, 0, msgFrameAscii.Length);
+            frame.Write(lrcAscii, 0, lrcAscii.Length);
+            frame.Write(endDelimiter, 0, endDelimiter.Length);
+
+            return frame.ToArray();
+        }
     }
 }
