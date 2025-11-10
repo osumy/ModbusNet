@@ -45,7 +45,6 @@ namespace ModbusNet
         public int RtuInterCharTimeoutMs { get; set; } = 2;
         public int RtuInterFrameTimeoutMs { get; set; } = 5;
 
-
         #endregion
     }
 }

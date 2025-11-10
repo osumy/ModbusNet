@@ -8,11 +8,14 @@ namespace ModbusNet.Device
     public class ModbusMaster : IModbusMaster
     {
         private readonly IModbusTransport _transport;
+        private readonly ModbusSettings _settings;
+
         private bool _disposed = false;
 
-        public ModbusMaster(IModbusTransport transport)
+        public ModbusMaster(IModbusTransport transport, ModbusSettings settings)
         {
             _transport = transport;
+            _settings = settings;
         }
 
 
@@ -82,11 +85,16 @@ namespace ModbusNet.Device
 
             var pdu = ReadMultipleHoldingRegistersMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
-            var request = new ReadHoldingRegistersRequest(0x03, slaveAddress, startAddress, numberOfPoints);
+            //var request = new ReadHoldingRegistersRequest(0x03, slaveAddress, startAddress, numberOfPoints);
+            //request.Serialize();
+            var request = AsciiMessageSerializer.BuildAsciiFrame(
+                slaveAddress,
+                pdu,
+                System.Text.Encoding.ASCII.GetBytes(_settings.AsciiStartDelimiter),
+                System.Text.Encoding.ASCII.GetBytes(_settings.AsciiEndDelimiter)
+                );
 
-            request.Serialize();
-            var responseData = SendRequestWithRetry(request.MessageFrame);
-            return responseData;
+            return SendRequestWithRetry(request);
         }
 
         public void WriteSingleHoldingRegister(byte slaveAddress, ushort registerAddress, ushort value)

@@ -56,10 +56,10 @@ namespace ModbusNet.Transport
             return frame.ToArray();
         }
 
-        public bool ChecksumsMatch(IModbusMessage message, byte[] messageFrame)
-        {
-            return ErrorCheckUtility.ComputeLrc(message.MessageFrame) == messageFrame[messageFrame.Length - 1];
-        }
+        //public bool ChecksumsMatch(IModbusMessage message, byte[] messageFrame)
+        //{
+        //    return ErrorCheckUtility.ComputeLrc(message.MessageFrame) == messageFrame[messageFrame.Length - 1];
+        //}
 
         //public byte[] ReadRequest()
         //{
@@ -105,9 +105,7 @@ namespace ModbusNet.Transport
                 throw new InvalidOperationException("Serial port is not connected.");
             }
 
-            var asciiFrame = BuildFrame(request);
-
-            _serialPort.Write(asciiFrame, 0, asciiFrame.Length);
+            _serialPort.Write(request, 0, request.Length);
             var response = ReceiveResponse();
 
             return ParseReadHoldingRegisters(response);

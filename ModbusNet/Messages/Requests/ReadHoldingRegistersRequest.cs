@@ -2,7 +2,7 @@
 
 namespace ModbusNet.Messages.Requests
 {
-    public class ReadHoldingRegistersRequest : IModbusMessage
+    public class ReadHoldingRegistersRequest
     {
         public ushort StartAddress { get; set; }
         public ushort NumberOfPoints { get; set; }
