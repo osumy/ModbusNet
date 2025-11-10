@@ -15,7 +15,7 @@ SerialPort _serialPort = new SerialPort(
     Handshake = Handshake.None
 };
 
-var master = ModbusFactory.CreateAsciiMaster(_serialPort);
+var master = Modbus.CreateAsciiMaster(_serialPort);
 
 
 var resp = master.ReadHoldingRegisters(slaveId: 1, startAddress: 6500, numberOfPoints: 5);

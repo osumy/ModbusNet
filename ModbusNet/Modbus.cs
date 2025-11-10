@@ -1,21 +1,10 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using NModbus.Device.MessageHandlers;
-//using System.Linq;
-//using System.Net.Sockets;
-//using NModbus.Extensions;
-//using NModbus.Data;
-//using NModbus.Device;
-//using NModbus.IO;
-//using NModbus.Logging;
-
-using ModbusNet.Device;
+﻿using ModbusNet.Device;
 using ModbusNet.Transport;
 using System.IO.Ports;
 
 namespace ModbusNet
 {
-    public class ModbusFactory// : IModbusFactory
+    public class Modbus
     {
         ///// <summary>
         ///// The "built-in" message handlers.
@@ -44,7 +33,7 @@ namespace ModbusNet
         /// <summary>
         /// Create a factory which uses the built in standard slave function handlers.
         /// </summary>
-        public ModbusFactory()
+        public Modbus()
         {
             //_functionServices = BuiltInFunctionServices.ToDictionary(s => s.FunctionCode, s => s);
 
