@@ -1,10 +1,9 @@
 ﻿using ModbusNet.Utils;
-using ModbusNet.Messages.Interfaces;
 using System.Buffers;
 
 namespace ModbusNet.Messages
 {
-    public sealed class AsciiMessageSerializer : IMessageSerializer
+    public sealed class AsciiMessageSerializer
     {
         private static readonly byte Colon = (byte)':';
         private static readonly byte Cr = (byte)'\r';

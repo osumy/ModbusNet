@@ -1,6 +1,0 @@
-﻿namespace ModbusNet.Messages
-{
-    internal class AbstractModbusMessage
-    {
-    }
-}
