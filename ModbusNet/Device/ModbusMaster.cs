@@ -15,41 +15,25 @@ namespace ModbusNet.Device
         }
 
 
-        //public ushort[] ReadHoldingRegisters(byte slaveId, ushort startAddress, ushort numberOfPoints)
-        //{
-        //    ThrowIfDisposed();
+        private ushort[] SendRequestWithRetry(byte[] request)
+        {
+            var retries = 3;
+            var delayBetweenRetriesMs = 100;
 
-        //    if (numberOfPoints < 1 || numberOfPoints > 125)
-        //        throw new ArgumentOutOfRangeException(nameof(numberOfPoints), "Must be 1-125 for Read Holding Registers");
+            for (int attempt = 0; attempt <= retries; attempt++)
+            {
+                try
+                {
+                    return _transport.SendRequest(request);
+                }
+                catch (TimeoutException) when (attempt < retries)
+                {
+                    Thread.Sleep(delayBetweenRetriesMs);
+                }
+            }
 
-        //    var request = new ReadHoldingRegistersRequest(0x03, slaveId, startAddress, numberOfPoints);
-
-        //    //return PerformReadRegisters(request);
-        //    request.Serialize();
-        //    var responseData = SendRequestWithRetry(request.MessageFrame);
-        //    //var response = ReadHoldingRegistersResponse.Deserialize(slaveId, responseData);
-        //    return responseData;
-        //}
-
-        //private ushort[] SendRequestWithRetry(byte[] request)
-        //{
-        //    var retries = 3;
-        //    var delayBetweenRetriesMs = 100;
-
-        //    for (int attempt = 0; attempt <= retries; attempt++)
-        //    {
-        //        try
-        //        {
-        //            return _transport.SendRequest(request);
-        //        }
-        //        catch (TimeoutException) when (attempt < retries)
-        //        {
-        //            Thread.Sleep(delayBetweenRetriesMs);
-        //        }
-        //    }
-
-        //    throw new TimeoutException($"Request failed after {retries + 1} attempts");
-        //}
+            throw new TimeoutException($"Request failed after {retries + 1} attempts");
+        }
 
 
         #region Bit Access - Discrete Inputs
@@ -95,7 +79,11 @@ namespace ModbusNet.Device
         {
             Validate(ValidationType.ReadMultipleHoldingRegisters, numberOfPoints);
 
-            throw new NotImplementedException();
+            var request = new ReadHoldingRegistersRequest(0x03, slaveAddress, startAddress, numberOfPoints);
+
+            request.Serialize();
+            var responseData = SendRequestWithRetry(request.MessageFrame);
+            return responseData;
         }
 
         public void WriteSingleHoldingRegister(byte slaveAddress, ushort registerAddress, ushort value)
