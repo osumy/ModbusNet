@@ -1,5 +1,4 @@
-﻿using System;
-namespace ModbusNet
+﻿namespace ModbusNet
 {
     public class ModbusException : Exception
     {
