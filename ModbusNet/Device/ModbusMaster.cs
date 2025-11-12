@@ -29,8 +29,9 @@ namespace ModbusNet.Device
 
             var request = _transport.BuildRequest(slaveAddress, pdu);
 
-            return null;
-            //return SendRequestWithRetry(request);
+            return _transport
+                .SendRequestReceiveResponse(request)
+                .StatusArray;
         }
 
         #endregion
@@ -45,8 +46,9 @@ namespace ModbusNet.Device
 
             var request = _transport.BuildRequest(slaveAddress, pdu);
 
-            return null;
-            //return SendRequestWithRetry(request);
+            return _transport
+                .SendRequestReceiveResponse(request)
+                .StatusArray;
         }
 
         public void WriteSingleCoil(byte slaveAddress, ushort address, ushort value)
@@ -57,7 +59,7 @@ namespace ModbusNet.Device
 
             var request = _transport.BuildRequest(slaveAddress, pdu);
 
-            //return SendRequestWithRetry(request);
+            _transport.SendRequestIgnoreResponse(request);
         }
 
         public void WriteMultipleCoils(byte slaveAddress, ushort startAddress, bool[] data)
@@ -68,7 +70,7 @@ namespace ModbusNet.Device
 
             var request = _transport.BuildRequest(slaveAddress, pdu);
 
-            //return SendRequestWithRetry(request);
+            _transport.SendRequestIgnoreResponse(request);
         }
 
         #endregion
@@ -113,7 +115,7 @@ namespace ModbusNet.Device
 
             var request = _transport.BuildRequest(slaveAddress, pdu);
 
-            //SendRequestWithRetry(request);
+            _transport.SendRequestIgnoreResponse(request);
         }
 
         public void WriteMultipleHoldingRegisters(byte slaveAddress, ushort startAddress, ushort[] data)
@@ -124,7 +126,7 @@ namespace ModbusNet.Device
 
             var request = _transport.BuildRequest(slaveAddress, pdu);
 
-            //SendRequestWithRetry(request);
+            _transport.SendRequestIgnoreResponse(request);
         }
 
         public ushort[] ReadWriteMultipleRegisters(byte slaveAddress, ushort readStartAddress, ushort numberOfPointsToRead,
@@ -136,8 +138,9 @@ namespace ModbusNet.Device
 
             var request = _transport.BuildRequest(slaveAddress, pdu);
 
-            //return SendRequestWithRetry(request);
-            return null;
+            return _transport
+                .SendRequestReceiveResponse(request)
+                .Registers;
         }
 
         public void MaskWriteRegister(byte slaveAddress, ushort address, ushort andMask, ushort orMask)
@@ -148,7 +151,7 @@ namespace ModbusNet.Device
 
             var request = _transport.BuildRequest(slaveAddress, pdu);
 
-            //SendRequestWithRetry(request);
+            _transport.SendRequestIgnoreResponse(request);
         }
 
         public ushort[] ReadFifoQueue(byte slaveAddress, ushort fifoAddress)

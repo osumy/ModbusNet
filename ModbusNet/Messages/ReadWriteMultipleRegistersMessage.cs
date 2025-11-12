@@ -38,7 +38,19 @@ namespace ModbusNet.Messages
 
         internal static ModbusResponse ParseResponsePDU(byte[] pdu)
         {
-            throw new NotImplementedException();
+            byte byteCount = pdu[1];
+
+            int registerCount = byteCount / 2;
+            ushort[] registers = new ushort[registerCount];
+
+            int pos = 2; // start of data
+            for (int i = 0; i < registerCount; i++)
+            {
+                registers[i] = (ushort)((pdu[pos] << 8) | pdu[pos + 1]);
+                pos += 2;
+            }
+
+            return new ModbusResponse(registers);
         }
     }
 }

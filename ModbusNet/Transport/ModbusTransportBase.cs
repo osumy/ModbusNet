@@ -30,6 +30,7 @@ namespace ModbusNet.Transport
         }
 
         public abstract ModbusResponse SendRequestReceiveResponse(byte[] request);
+        public abstract void SendRequestIgnoreResponse(byte[] request);
         public void ValidatePDU(byte[] responsePdu, byte expectedFunctionCode)
         {
             if (responsePdu == null || responsePdu.Length == 0)

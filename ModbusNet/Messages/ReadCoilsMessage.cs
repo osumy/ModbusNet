@@ -20,7 +20,28 @@ namespace ModbusNet.Messages
 
         internal static ModbusResponse ParseResponsePDU(byte[] pdu)
         {
-            throw new NotImplementedException();
+            byte byteCount = pdu[1];
+
+            // Calculate number of coils from byte count
+            int coilCount = byteCount * 8; // 8 bits per byte
+            bool[] coils = new bool[coilCount];
+
+            int pos = 2; // start of data
+            for (int i = 0; i < byteCount; i++)
+            {
+                byte b = pdu[pos];
+                for (int bit = 0; bit < 8; bit++)
+                {
+                    int index = i * 8 + bit;
+                    if (index < coilCount)
+                    {
+                        coils[index] = (b & (1 << bit)) != 0;
+                    }
+                }
+                pos++;
+            }
+
+            return new ModbusResponse(coils);
         }
     }
 }

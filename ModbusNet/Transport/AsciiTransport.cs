@@ -63,7 +63,7 @@ namespace ModbusNet.Transport
             throw new TimeoutException($"Request failed after {_settings.retryCount + 1} attempts");
         }
 
-        public void SendRequestIgnoreResponse(byte[] request)
+        public override void SendRequestIgnoreResponse(byte[] request)
         {
             ThrowIfDisposed();
 
@@ -78,6 +78,13 @@ namespace ModbusNet.Transport
                 try
                 {
                     _serialPort.Write(request, 0, request.Length);
+
+                    var responsePDU = ReceiveResponse();
+
+                    var fcAscii = new byte[2];
+                    Array.Copy(request, 3, fcAscii, 0, fcAscii.Length);
+
+                    ValidatePDU(responsePDU, AsciiUtility.FromAsciiBytes(fcAscii)[0]);
                 }
                 catch (TimeoutException) when (attempt < _settings.retryCount)
                 {
@@ -87,8 +94,6 @@ namespace ModbusNet.Transport
 
             throw new TimeoutException($"Request failed after {_settings.retryCount + 1} attempts");
         }
-
-        
 
         private byte[] ReceiveResponse()
         {
