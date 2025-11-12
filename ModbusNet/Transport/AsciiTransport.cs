@@ -5,13 +5,16 @@ using System.Text;
 
 namespace ModbusNet.Transport
 {
-    public class AsciiTransport : IModbusTransport
+    public class AsciiTransport : ModbusTransportBase
     {
         private readonly SerialPort _serialPort;
         private readonly ModbusSettings _settings;
 
         public bool IsConnected => _serialPort.IsOpen;
         private bool _disposed = false;
+
+        public byte[] StartDelimiterAsciiArray { get; private set; }
+        public byte[] EndDelimiterAsciiArray { get; private set; }
 
 
         public AsciiTransport(SerialPort serialPort, ModbusSettings settings)
@@ -21,103 +24,13 @@ namespace ModbusNet.Transport
 
             if (!_serialPort.IsOpen)
                 _serialPort.Open();
+
+            StartDelimiterAsciiArray = Encoding.ASCII.GetBytes(settings.AsciiStartDelimiter);
+            EndDelimiterAsciiArray = Encoding.ASCII.GetBytes(settings.AsciiEndDelimiter);
         }
 
 
-        public ushort[] SendRequestWithRetry16A(byte[] request)
-        {
-            var retries = 3;
-            var delayBetweenRetriesMs = 100;
-
-            for (int attempt = 0; attempt <= retries; attempt++)
-            {
-                try
-                {
-                    return SendRequest(request);
-                }
-                catch (TimeoutException) when (attempt < retries)
-                {
-                    Thread.Sleep(delayBetweenRetriesMs);
-                }
-            }
-
-            throw new TimeoutException($"Request failed after {retries + 1} attempts");
-        }
-
-
-        //public override byte[] BuildMessageFrame(IModbusMessage message)
-        //{
-        //    var msgFrame = message.MessageFrame;
-
-        //    var msgFrameAscii = AsciiUtility.GetAsciiBytes(msgFrame);
-        //    var lrcAscii = AsciiUtility.GetAsciiBytes(ErrorCheckCalculator.ComputeLrc(msgFrame));
-        //    var nlAscii = Encoding.UTF8.GetBytes(NewLine.ToCharArray());
-
-        //    var frame = new MemoryStream(1 + msgFrameAscii.Length + lrcAscii.Length + nlAscii.Length);
-        //    frame.WriteByte((byte)':');
-        //    frame.Write(msgFrameAscii, 0, msgFrameAscii.Length);
-        //    frame.Write(lrcAscii, 0, lrcAscii.Length);
-        //    frame.Write(nlAscii, 0, nlAscii.Length);
-
-        //    return frame.ToArray();
-        //}
-        public byte[] BuildFrame(byte[] msgFrame)
-        {
-            var msgFrameAscii = AsciiUtility.ToAsciiBytes(msgFrame);
-            var lrcAscii = AsciiUtility.ToAsciiBytes(ErrorCheckUtility.ComputeLrc(msgFrame));
-            var edAscii = Encoding.UTF8.GetBytes(_settings.AsciiEndDelimiter.ToCharArray());
-            var stAscii = Encoding.UTF8.GetBytes(_settings.AsciiStartDelimiter.ToCharArray());
-
-            var frame = new MemoryStream(stAscii.Length + msgFrameAscii.Length + lrcAscii.Length + edAscii.Length);
-            frame.Write(stAscii, 0, stAscii.Length);
-            frame.Write(msgFrameAscii, 0, msgFrameAscii.Length);
-            frame.Write(lrcAscii, 0, lrcAscii.Length);
-            frame.Write(edAscii, 0, edAscii.Length);
-
-            return frame.ToArray();
-        }
-
-        //public bool ChecksumsMatch(IModbusMessage message, byte[] messageFrame)
-        //{
-        //    return ErrorCheckUtility.ComputeLrc(message.MessageFrame) == messageFrame[messageFrame.Length - 1];
-        //}
-
-        //public byte[] ReadRequest()
-        //{
-        //    return ReadRequestResponse();
-        //}
-        //public void IgnoreResponse()
-        //{
-        //    ReadRequestResponse();
-        //}
-
-        //public override IModbusMessage ReadResponse<T>()
-        //{
-        //    return CreateResponse<T>(ReadRequestResponse());
-        //}
-
-        //internal byte[] ReadRequestResponse()
-        //{
-        //    //// read message frame, removing frame start ':'
-        //    //string frameHex = StreamResourceUtility.ReadLine(StreamResource).Substring(1);
-
-        //    //// convert hex to bytes
-        //    //byte[] frame = ModbusUtility.HexToBytes(frameHex);
-        //    //Logger.Trace($"RX: {string.Join(", ", frame)}");
-
-        //    //if (frame.Length < 3)
-        //    //{
-        //    //    throw new IOException("Premature end of stream, message truncated.");
-        //    //}
-
-        //    //return frame;
-        //    return null;
-        //}
-
-
-
-
-        public ushort[] SendRequest(byte[] request)
+        public override ModbusResponse SendRequestReceiveResponse(byte[] request)
         {
             ThrowIfDisposed();
 
@@ -126,22 +39,56 @@ namespace ModbusNet.Transport
                 throw new InvalidOperationException("Serial port is not connected.");
             }
 
-            _serialPort.Write(request, 0, request.Length);
-            var response = ReceiveResponse();
 
-            return ParseReadHoldingRegisters(response);
+            for (int attempt = 0; attempt <= _settings.retryCount; attempt++)
+            {
+                try
+                { 
+                    _serialPort.Write(request, 0, request.Length);
+                    var responsePDU = ReceiveResponse();
+
+                    var fcAscii = new byte[2];
+                    Array.Copy(request, 3, fcAscii, 0, fcAscii.Length);
+
+                    ValidatePDU(responsePDU, AsciiUtility.FromAsciiBytes(fcAscii)[0]);
+
+                    return BuildResponse(responsePDU);
+                }
+                catch (TimeoutException) when (attempt < _settings.retryCount)
+                {
+                    Thread.Sleep(_settings.retryDelayMs);
+                }
+            }
+
+            throw new TimeoutException($"Request failed after {_settings.retryCount + 1} attempts");
         }
 
-        //private string ConvertToAscii(byte[] data)
-        //{
-        //    var lrc = CalculateLrc(data);
-        //    var dataWithLrc = new byte[data.Length + 1];
-        //    Array.Copy(data, 0, dataWithLrc, 0, data.Length);
-        //    dataWithLrc[data.Length] = lrc;
+        public void SendRequestIgnoreResponse(byte[] request)
+        {
+            ThrowIfDisposed();
 
-        //    var hexString = BitConverter.ToString(dataWithLrc).Replace("-", "");
-        //    return _settings.AsciiStartDelimiter + hexString + _settings.AsciiEndDelimiter;
-        //}
+            if (IsConnected == false)
+            {
+                throw new InvalidOperationException("Serial port is not connected.");
+            }
+
+
+            for (int attempt = 0; attempt <= _settings.retryCount; attempt++)
+            {
+                try
+                {
+                    _serialPort.Write(request, 0, request.Length);
+                }
+                catch (TimeoutException) when (attempt < _settings.retryCount)
+                {
+                    Thread.Sleep(_settings.retryDelayMs);
+                }
+            }
+
+            throw new TimeoutException($"Request failed after {_settings.retryCount + 1} attempts");
+        }
+
+        
 
         private byte[] ReceiveResponse()
         {
@@ -211,11 +158,6 @@ namespace ModbusNet.Transport
 
             // Decode ASCII hex -> raw bytes using your AsciiUtility.DecodeHex
             var decoded = AsciiUtility.FromAsciiBytes(payload.ToArray());
-            //if (decoded < 0)
-            //    throw new FormatException("Invalid hex characters in ASCII payload.");
-
-            //if (decoded != raw.Length)
-            //    throw new InvalidOperationException("Decoded length mismatch.");
 
             if (decoded.Length < 1)
                 throw new FormatException("Decoded Modbus frame too short.");
@@ -227,65 +169,34 @@ namespace ModbusNet.Transport
             var message = new byte[decoded.Length - 1];
             Array.Copy(decoded, 0, message, 0, message.Length);
 
-            // Validate LRC
-            var calc = ErrorCheckUtility.ComputeLrc(message);
-            if (calc != lrc)
-                throw new InvalidDataException($"LRC mismatch. Calculated 0x{calc:X2}, Received 0x{lrc:X2}.");
+            ChecksumsMatch(message, [lrc]);
 
-            // Return the message (address + function + data), without LRC
-            return message;
+            var pdu = new byte[message.Length - 1];
+            Array.Copy(message, 1, pdu, 0, pdu.Length);
+
+            // Return the PDU (function code + data), without LRC and address
+            return pdu;
         }
 
-        public ushort[] ParseReadHoldingRegisters(byte[] response)
+        public override byte[] BuildRequest(byte slaveAddress, byte[] pdu)
         {
-            if (response == null || response.Length < 3)
-                throw new ArgumentException("Invalid response.");
-
-            byte slave = response[0];
-            byte function = response[1];
-            byte byteCount = response[2];
-
-            if (function != 0x03)
-                throw new InvalidOperationException($"Unexpected function code: {function}");
-
-            if (byteCount != response.Length - 3)
-                throw new FormatException("Byte count mismatch.");
-
-            int registerCount = byteCount / 2;
-            ushort[] registers = new ushort[registerCount];
-
-            int pos = 3; // start of data
-            for (int i = 0; i < registerCount; i++)
-            {
-                registers[i] = (ushort)((response[pos] << 8) | response[pos + 1]);
-                pos += 2;
-            }
-
-            return registers;
+            return AsciiUtility.BuildAsciiFrame(
+                slaveAddress,
+                pdu,
+                StartDelimiterAsciiArray,
+                EndDelimiterAsciiArray
+                );
         }
 
-        private byte[] ConvertFromAscii(string asciiFrame)
+        public override void ChecksumsMatch(byte[] rawMessage, byte[] ErrorCheckBytes)
         {
-            var byteCount = asciiFrame.Length / 2;
-            var bytes = new byte[byteCount];
-
-            for (int i = 0; i < byteCount; i++)
+            if (!ErrorCheckUtility.ValidateLrc(rawMessage, ErrorCheckBytes[0]))
             {
-                bytes[i] = Convert.ToByte(asciiFrame.Substring(i * 2, 2), 16);
+                throw new ModbusExceptionLRC();
             }
-
-            // بررسی LRC
-            var data = bytes.Take(bytes.Length - 1).ToArray();
-            //var receivedLrc = bytes.Last();
-            //var calculatedLrc = CalculateLrc(data);
-
-            //if (receivedLrc != calculatedLrc)
-            //    throw new InvalidOperationException("LRC check failed");
-
-            return data;
         }
 
-        private void ThrowIfDisposed()
+        protected void ThrowIfDisposed()
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().Name);
@@ -299,20 +210,5 @@ namespace ModbusNet.Transport
                 _disposed = true;
             }
         }
-
-        //public override void IgnoreResponse()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public override bool ChecksumsMatch(IModbusMessage message, byte[] messageFrame)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public override byte[] ReadRequest()
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }

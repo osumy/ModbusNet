@@ -1,10 +1,11 @@
 ﻿using ModbusNet;
+using ModbusNet.Messages;
 using ModbusNet.Utils;
 using System.IO.Ports;
 
 namespace ModbusNet.Transport
 {
-    public class RtuTransport : IModbusTransport
+    public class RtuTransport : ModbusTransportBase
     {
         private readonly SerialPort _serialPort;
         private readonly ModbusSettings _settings;
@@ -110,12 +111,22 @@ namespace ModbusNet.Transport
             }
         }
 
-        ushort[] IModbusTransport.SendRequest(byte[] request)
+        public ushort[] SendRequestWithRetry16A(byte[] request)
         {
             throw new NotImplementedException();
         }
 
-        public ushort[] SendRequestWithRetry16A(byte[] request)
+        public override byte[] BuildRequest(byte slaveAddress, byte[] pdu)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ModbusResponse SendRequestReceiveResponse(byte[] request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ChecksumsMatch(byte[] rawMessage, byte[] ErrorCheckBytes)
         {
             throw new NotImplementedException();
         }

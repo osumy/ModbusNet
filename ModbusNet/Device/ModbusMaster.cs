@@ -10,28 +10,12 @@ namespace ModbusNet.Device
         private readonly IModbusTransport _transport;
         private readonly ModbusSettings _settings;
 
-        byte[] _startDelimiterAsciiArray;
-        byte[] _endDelimiterAsciiArray;
-
         private bool _disposed = false;
 
         public ModbusMaster(IModbusTransport transport, ModbusSettings settings)
         {
             _transport = transport;
             _settings = settings;
-
-            _startDelimiterAsciiArray = System.Text.Encoding.ASCII.GetBytes(_settings.AsciiStartDelimiter);
-            _endDelimiterAsciiArray = System.Text.Encoding.ASCII.GetBytes(_settings.AsciiEndDelimiter);
-        }
-
-        private byte[] BuildRequest(byte slaveAddress, byte[] pdu)
-        {
-            return AsciiUtility.BuildAsciiFrame(
-                slaveAddress,
-                pdu,
-                _startDelimiterAsciiArray,
-                _endDelimiterAsciiArray
-                );
         }
 
 
@@ -43,7 +27,7 @@ namespace ModbusNet.Device
 
             var pdu = ReadDiscreteInputsMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             return null;
             //return SendRequestWithRetry(request);
@@ -59,7 +43,7 @@ namespace ModbusNet.Device
 
             var pdu = ReadCoilsMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             return null;
             //return SendRequestWithRetry(request);
@@ -71,7 +55,7 @@ namespace ModbusNet.Device
 
             var pdu = WriteSingleCoilMessage.BuildRequestPDU(address, value);
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //return SendRequestWithRetry(request);
         }
@@ -82,7 +66,7 @@ namespace ModbusNet.Device
 
             var pdu = WriteMultipleCoilsMessage.BuildRequestPDU(startAddress, data);
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //return SendRequestWithRetry(request);
         }
@@ -97,9 +81,11 @@ namespace ModbusNet.Device
 
             var pdu = ReadInputRegistersMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
-            return _transport.SendRequestWithRetry16A(request);
+            return _transport
+                .SendRequestReceiveResponse(request)
+                .Registers;
         }
 
         #endregion
@@ -112,9 +98,11 @@ namespace ModbusNet.Device
 
             var pdu = ReadMultipleHoldingRegistersMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
-            return _transport.SendRequestWithRetry16A(request);
+            return _transport
+                .SendRequestReceiveResponse(request)
+                .Registers;
         }
 
         public void WriteSingleHoldingRegister(byte slaveAddress, ushort address, ushort value)
@@ -123,7 +111,7 @@ namespace ModbusNet.Device
 
             var pdu = WriteSingleHoldingRegisterMessage.BuildRequestPDU(address, value);
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //SendRequestWithRetry(request);
         }
@@ -134,7 +122,7 @@ namespace ModbusNet.Device
 
             var pdu = WriteMultipleHoldingRegistersMessage.BuildRequestPDU(startAddress, data);
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //SendRequestWithRetry(request);
         }
@@ -146,7 +134,7 @@ namespace ModbusNet.Device
 
             var pdu = ReadWriteMultipleRegistersMessage.BuildRequestPDU(readStartAddress, numberOfPointsToRead, writeStartAddress, writeData);
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //return SendRequestWithRetry(request);
             return null;
@@ -158,7 +146,7 @@ namespace ModbusNet.Device
 
             var pdu = MaskWriteRegisterMessage.BuildRequestPDU(address, andMask, orMask);
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //SendRequestWithRetry(request);
         }
@@ -169,7 +157,7 @@ namespace ModbusNet.Device
 
             var pdu = ReadFifoQueueMessage.BuildRequestPDU(fifoAddress);
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //return SendRequestWithRetry(request);
             return null;
@@ -186,7 +174,7 @@ namespace ModbusNet.Device
 
             //var pdu = ReadFileRecordMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
-            //var request = BuildRequest(slaveAddress, pdu);
+            //var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //return SendRequestWithRetry(request);
             return null;
@@ -198,7 +186,7 @@ namespace ModbusNet.Device
 
             //var pdu = WriteFileRecordMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
-            //var request = BuildRequest(slaveAddress, pdu);
+            //var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //return SendRequestWithRetry(request);
         }
@@ -213,7 +201,7 @@ namespace ModbusNet.Device
 
             var pdu = ReadExceptionStatusMessage.BuildRequestPDU();
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //return SendRequestWithRetry(request);
             return 0;
@@ -225,7 +213,7 @@ namespace ModbusNet.Device
 
             //var pdu = DiagnosticsMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
-            //var request = BuildRequest(slaveAddress, pdu);
+            //var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //return SendRequestWithRetry(request);
             return null;
@@ -237,7 +225,7 @@ namespace ModbusNet.Device
 
             var pdu = GetCommunicationEventCounterMessage.BuildRequestPDU();
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //return SendRequestWithRetry(request);
             return (0, 0);
@@ -249,7 +237,7 @@ namespace ModbusNet.Device
 
             var pdu = GetCommunicationEventLogMessage.BuildRequestPDU();
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //return SendRequestWithRetry(request);
             return (0, 0, 0, null);
@@ -261,7 +249,7 @@ namespace ModbusNet.Device
 
             var pdu = ReportServerIdMessage.BuildRequestPDU();
 
-            var request = BuildRequest(slaveAddress, pdu);
+            var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //return SendRequestWithRetry(request);
             return null;
@@ -277,7 +265,7 @@ namespace ModbusNet.Device
 
             //var pdu = ReadDeviceIdentificationMessage.BuildRequestPDU(startAddress, numberOfPoints);
 
-            //var request = BuildRequest(slaveAddress, pdu);
+            //var request = _transport.BuildRequest(slaveAddress, pdu);
 
             //return SendRequestWithRetry(request);
             return null;
