@@ -1,13 +1,32 @@
 ﻿using System;
 namespace ModbusNet
 {
-    public class ModbusProtocolException : Exception
+    public class ModbusException : Exception
     {
-        public ModbusProtocolException(string message) : base(message) { }
+        public byte ExceptionCode { get; }
+        public byte OriginalFunctionCode { get; }
+
+        public ModbusException(byte originalFC, byte exceptionCode)
+            : base($"Modbus exception: FC={originalFC:X2}, Code={exceptionCode}")
+        {
+            OriginalFunctionCode = originalFC;
+            ExceptionCode = exceptionCode;
+        }
+
+
     }
 
-    public class ModbusCrcException : ModbusProtocolException
+    public class ModbusExceptionLRC : Exception
     {
-        public ModbusCrcException(string message) : base(message) { }
+        public ModbusExceptionLRC()
+            : base($"Modbus LRC exception.")
+        { }
+    }
+
+    public class ModbusExceptionCRC : Exception
+    {
+        public ModbusExceptionCRC()
+            : base($"Modbus CRC exception.")
+        { }
     }
 }
