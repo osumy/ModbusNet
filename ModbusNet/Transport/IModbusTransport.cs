@@ -4,22 +4,14 @@ namespace ModbusNet.Transport
 {
     public interface IModbusTransport : IDisposable
     {
-        ushort[] SendRequest(byte[] request);
-        bool IsConnected { get; }
-        void Connect();
-        void Disconnect();
+        public byte[] BuildRequest(byte slaveAddress, byte[] pdu);
+        public void ValidatePDU(byte[] responsePdu, byte expectedFunctionCode);
+        public ModbusResponse SendRequestReceiveResponse(byte[] request);
+        //ushort[] SendRequest(byte[] request);
+        //ushort[] SendRequestWithRetry16A(byte[] request);
 
-        //int Retries { get; set; }
+        //bool IsConnected { get; }
 
-        //uint RetryOnOldResponseThreshold { get; set; }
-
-        //bool SlaveBusyUsesRetryCount { get; set; }
-
-        //int WaitToRetryMilliseconds { get; set; }
-
-        //int ReadTimeout { get; set; }
-
-        //int WriteTimeout { get; set; }
 
         //T UnicastMessage<T>(IModbusMessage message) where T : IModbusMessage, new();
 
