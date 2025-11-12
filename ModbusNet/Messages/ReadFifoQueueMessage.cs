@@ -14,5 +14,10 @@ namespace ModbusNet.Messages
 
             return pdu;
         }
+
+        internal static ModbusResponse ParseResponsePDU(byte[] pdu)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
