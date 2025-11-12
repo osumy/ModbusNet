@@ -37,7 +37,7 @@
         /// <param name="slaveAddress">Address of the device to write to.</param>
         /// <param name="coilAddress">Address to write value to.</param>
         /// <param name="value">Value to write.</param>
-        void WriteSingleCoil(byte slaveAddress, ushort coilAddress, bool value);
+        void WriteSingleCoil(byte slaveAddress, ushort address, ushort value);
 
         /// <summary>
         /// Writes a sequence of coils.
@@ -85,7 +85,7 @@
         /// <param name="slaveAddress">Address of the device to write to.</param>
         /// <param name="registerAddress">Address to write.</param>
         /// <param name="value">Value to write.</param>
-        void WriteSingleHoldingRegister(byte slaveAddress, ushort registerAddress, ushort value);
+        void WriteSingleHoldingRegister(byte slaveAddress, ushort address, ushort value);
 
         /// <summary>
         /// Writes a block of 1 to 123 contiguous registers.
@@ -120,10 +120,10 @@
         /// Function Code: 0x16 (Mask_Write_Register)
         /// </summary>
         /// <param name="slaveAddress">Address of the device to write to.</param>
-        /// <param name="registerAddress">Address of the register to mask write.</param>
+        /// <param name="address">Address of the register to mask write.</param>
         /// <param name="andMask">AND mask to apply to the current register value.</param>
         /// <param name="orMask">OR mask to apply to the current register value.</param>
-        void MaskWriteRegister(byte slaveAddress, ushort registerAddress, ushort andMask, ushort orMask);
+        void MaskWriteRegister(byte slaveAddress, ushort address, ushort andMask, ushort orMask);
 
         /// <summary>
         /// Reads the contents of a First-In-First-Out (FIFO) queue of register words.

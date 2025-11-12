@@ -4,7 +4,7 @@ namespace ModbusNet.Messages
 {
     internal class GetCommunicationEventCounterMessage
     {
-        internal static object BuildRequestPDU()
+        internal static byte[] BuildRequestPDU()
         {
             var pdu = new byte[1];
 
