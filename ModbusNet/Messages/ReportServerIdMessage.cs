@@ -1,11 +1,16 @@
-﻿
+﻿using ModbusNet.Enum;
+
 namespace ModbusNet.Messages
 {
     internal class ReportServerIdMessage
     {
-        internal static byte[] BuildRequestPDU(object startAddress, object numberOfPoints)
+        internal static byte[] BuildRequestPDU()
         {
-            throw new NotImplementedException();
+            var pdu = new byte[1];
+
+            pdu[0] = (byte)ModbusPublicFunctionCode.Report_Server_ID;
+
+            return pdu;
         }
     }
 }
