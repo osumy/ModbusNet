@@ -3,7 +3,7 @@ using ModbusNet.Messages;
 
 namespace ModbusNet.Transport
 {
-    public abstract class ModbusTransportBase : IModbusTransport
+    public abstract class ModbusTransportBase : IDisposable
     {
         public abstract byte[] BuildRequest(byte slaveAddress, byte[] pdu);
 

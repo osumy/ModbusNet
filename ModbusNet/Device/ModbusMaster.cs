@@ -1,18 +1,17 @@
 ﻿using ModbusNet.Device.Validation;
 using ModbusNet.Messages;
 using ModbusNet.Transport;
-using ModbusNet.Utils;
 
 namespace ModbusNet.Device
 {
     public class ModbusMaster : IModbusMaster
     {
-        private readonly IModbusTransport _transport;
+        private readonly ModbusTransportBase _transport;
         private readonly ModbusSettings _settings;
 
         private bool _disposed = false;
 
-        public ModbusMaster(IModbusTransport transport, ModbusSettings settings)
+        public ModbusMaster(ModbusTransportBase transport, ModbusSettings settings)
         {
             _transport = transport;
             _settings = settings;
