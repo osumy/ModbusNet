@@ -1,4 +1,4 @@
-﻿using Modbus.Models.Enums;
+﻿using ModbusNet.Enum;
 using System.IO.Ports;
 
 namespace ModbusNet
