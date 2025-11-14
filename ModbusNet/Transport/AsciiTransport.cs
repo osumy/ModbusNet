@@ -11,6 +11,7 @@ namespace ModbusNet.Transport
         private readonly ModbusSettings _settings;
 
         public bool IsConnected => _serialPort.IsOpen;
+        private readonly SemaphoreSlim _writeLock = new(1, 1);
         private bool _disposed = false;
 
         public byte[] StartDelimiterAsciiArray { get; private set; }
@@ -19,8 +20,8 @@ namespace ModbusNet.Transport
 
         public AsciiTransport(SerialPort serialPort, ModbusSettings settings)
         {
-            _serialPort = serialPort;
-            _settings = settings;
+            _serialPort = serialPort ?? throw new ArgumentNullException(nameof(serialPort));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
             if (!_serialPort.IsOpen)
                 _serialPort.Open();
@@ -182,6 +183,245 @@ namespace ModbusNet.Transport
             // Return the PDU (function code + data), without LRC and address
             return pdu;
         }
+
+        #region Async IO
+        // ---------- Async public methods ----------
+
+        /// <summary>
+        /// Send request, do not wait for response (only waits for the write to complete).
+        /// </summary>
+        public async Task SendRequestIgnoreResponseAsync(byte[] request, CancellationToken cancellationToken = default)
+        {
+            ThrowIfDisposed();
+            if (!IsConnected) throw new InvalidOperationException("Serial port is not connected.");
+
+            for (int attempt = 0; attempt <= _settings.retryCount; attempt++)
+            {
+                try
+                {
+                    await WriteAsync(request, cancellationToken).ConfigureAwait(false);
+                    return; // we intentionally don't wait for a response
+                }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    throw;
+                }
+                catch (TimeoutException) when (attempt < _settings.retryCount)
+                {
+                    await Task.Delay(_settings.retryDelayMs, cancellationToken).ConfigureAwait(false);
+                }
+                catch (IOException) when (attempt < _settings.retryCount)
+                {
+                    await Task.Delay(_settings.retryDelayMs, cancellationToken).ConfigureAwait(false);
+                }
+            }
+
+            throw new TimeoutException($"Write failed after {_settings.retryCount + 1} attempts");
+        }
+
+        /// <summary>
+        /// Send request and await response PDU (async, with timeout).
+        /// </summary>
+        public async Task<ModbusResponse> SendRequestReceiveResponseAsync(byte[] request, TimeSpan timeout, CancellationToken cancellationToken = default)
+        {
+            ThrowIfDisposed();
+            if (!IsConnected) throw new InvalidOperationException("Serial port is not connected.");
+
+            for (int attempt = 0; attempt <= _settings.retryCount; attempt++)
+            {
+                using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                linkedCts.CancelAfter(timeout);
+
+                try
+                {
+                    await WriteAsync(request, linkedCts.Token).ConfigureAwait(false);
+                    var responsePDU = await ReceiveResponseAsync(linkedCts.Token).ConfigureAwait(false);
+
+                    // extract function code from request (you used bytes 3..4 previously)
+                    var fcAscii = new byte[2];
+                    Array.Copy(request, 3, fcAscii, 0, fcAscii.Length);
+                    ValidatePDU(responsePDU, AsciiUtility.FromAsciiBytes(fcAscii)[0]);
+
+                    return BuildResponse(responsePDU);
+                }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    // user cancellation - rethrow as is
+                    throw;
+                }
+                catch (OperationCanceledException) when (attempt < _settings.retryCount)
+                {
+                    // timeout for this attempt - retry after delay
+                    await Task.Delay(_settings.retryDelayMs, cancellationToken).ConfigureAwait(false);
+                }
+                catch (TimeoutException) when (attempt < _settings.retryCount)
+                {
+                    await Task.Delay(_settings.retryDelayMs, cancellationToken).ConfigureAwait(false);
+                }
+                catch (IOException) when (attempt < _settings.retryCount)
+                {
+                    await Task.Delay(_settings.retryDelayMs, cancellationToken).ConfigureAwait(false);
+                }
+            }
+
+            throw new TimeoutException($"Request failed after {_settings.retryCount + 1} attempts");
+        }
+
+
+        // ---------- Async private methods ----------
+
+        private async Task WriteAsync(byte[] buffer, CancellationToken ct)
+        {
+            // ensure only one writer at a time
+            await _writeLock.WaitAsync(ct).ConfigureAwait(false);
+            try
+            {
+                // Prefer BaseStream async if available
+                if (_serialPort.BaseStream.CanWrite)
+                {
+                    await _serialPort.BaseStream.WriteAsync(buffer, 0, buffer.Length, ct).ConfigureAwait(false);
+                    // Do not rely on FlushAsync for SerialPort.BaseStream
+                }
+                else
+                {
+                    // Fallback: blocking write on threadpool
+                    await Task.Run(() => _serialPort.Write(buffer, 0, buffer.Length), ct).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                _writeLock.Release();
+            }
+        }
+
+        /// <summary>
+        /// Async version of your ReceiveResponse: reads an ASCII Modbus frame:
+        /// waits for ':' then reads payload until CRLF, decodes, validates, and returns PDU (function + data).
+        /// </summary>
+        private async Task<byte[]> ReceiveResponseAsync(CancellationToken ct)
+        {
+            // Use a small buffer for reads
+            var readBuffer = new byte[256];
+            var asciiPayload = new List<byte>(); // ASCII hex chars between ':' and CRLF
+            bool foundStart = false;
+            bool sawCr = false;
+
+            Stream baseStream = null;
+            try { baseStream = _serialPort?.BaseStream; } catch { baseStream = null; }
+
+            // Helper to read one byte (async if possible, else via Task.Run)
+            async Task<int> ReadOneAsync()
+            {
+                ct.ThrowIfCancellationRequested();
+
+                if (baseStream != null && baseStream.CanRead)
+                {
+                    var one = new byte[1];
+                    int rn = await baseStream.ReadAsync(one, 0, 1, ct).ConfigureAwait(false);
+                    if (rn == 0) return -1;
+                    return one[0];
+                }
+                else
+                {
+                    // Fallback to blocking ReadByte on threadpool
+                    return await Task.Run(() =>
+                    {
+                        try
+                        {
+                            return _serialPort.ReadByte();
+                        }
+                        catch (TimeoutException) { throw; }
+                        catch (IOException) { throw; }
+                    }, ct).ConfigureAwait(false);
+                }
+            }
+
+            // First find ':' start delimiter
+            while (!foundStart)
+            {
+                int r = await ReadOneAsync().ConfigureAwait(false);
+                if (r < 0) throw new IOException("Serial port closed or no data available.");
+                if ((byte)r == (byte)':')
+                {
+                    foundStart = true;
+                    break;
+                }
+            }
+
+            // Read payload until CRLF
+            while (true)
+            {
+                int r = await ReadOneAsync().ConfigureAwait(false);
+                if (r < 0) throw new IOException("Serial port closed or no data available while reading payload.");
+                byte b = (byte)r;
+
+                if (!sawCr)
+                {
+                    if (b == (byte)'\r')
+                    {
+                        sawCr = true;
+                        continue;
+                    }
+                    else
+                    {
+                        asciiPayload.Add(b);
+                    }
+                }
+                else
+                {
+                    if (b == (byte)'\n')
+                    {
+                        break; // done
+                    }
+                    else
+                    {
+                        // false alarm - previous '\r' was data
+                        asciiPayload.Add((byte)'\r');
+                        if (b == (byte)'\r')
+                        {
+                            // consecutive CRs - keep sawCr true (treat as possible start of CRLF)
+                            sawCr = true;
+                        }
+                        else
+                        {
+                            asciiPayload.Add(b);
+                            sawCr = false;
+                        }
+                    }
+                }
+            }
+
+            if (asciiPayload.Count == 0)
+                throw new FormatException("Empty Modbus ASCII payload received.");
+
+            if ((asciiPayload.Count & 1) != 0)
+                throw new FormatException("Invalid ASCII payload length (must be even number of hex chars).");
+
+            // decode ASCII hex to bytes (e.g. "010300100002FB" => raw bytes)
+            var decoded = AsciiUtility.FromAsciiBytes(asciiPayload.ToArray());
+
+            if (decoded.Length < 1)
+                throw new FormatException("Decoded Modbus frame too short.");
+
+            // last decoded byte is LRC
+            var lrc = decoded[decoded.Length - 1];
+            var message = new byte[decoded.Length - 1];
+            Array.Copy(decoded, 0, message, 0, message.Length);
+
+            // Validate LRC
+            ChecksumsMatch(message, new byte[] { lrc });
+
+            // message layout: [address][function][...data...]
+            if (message.Length < 2)
+                throw new FormatException("Decoded Modbus frame is too short for address + function.");
+
+            var pdu = new byte[message.Length - 1];
+            Array.Copy(message, 1, pdu, 0, pdu.Length);
+            return pdu;
+        }
+
+        #endregion
+
 
         public override byte[] BuildRequest(byte slaveAddress, byte[] pdu)
         {
