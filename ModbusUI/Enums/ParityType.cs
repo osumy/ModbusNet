@@ -1,4 +1,4 @@
-﻿namespace Modbus.Models.Enums
+﻿namespace ModbusUI.Enums
 {
     public enum ParityType
     {

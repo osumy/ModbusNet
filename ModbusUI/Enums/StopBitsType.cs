@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace Modbus.Models.Enums
+﻿namespace ModbusUI.Enums
 {
     public enum StopBitsType
     {
