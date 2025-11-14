@@ -3,7 +3,7 @@
     /// <summary>
     /// Supported public function codes
     /// </summary>
-    public enum ModbusPublicFunctionCode : byte
+    public enum ModbusFunctionCode : byte
     {
         //// Bit Access ////
         // Discrete inputs
@@ -51,20 +51,20 @@
         /// </summary>
         /// <param name="code">The function code to check.</param>
         /// <returns>True if the function code represents an error; otherwise, false.</returns>
-        public static bool IsError(this ModbusPublicFunctionCode code) => ((byte)code & ErrorMask) != 0;
+        public static bool IsError(this ModbusFunctionCode code) => ((byte)code & ErrorMask) != 0;
 
         /// <summary>
         /// Converts the given function code to its error representation.
         /// </summary>
         /// <param name="code">The function code to convert.</param>
         /// <returns>The error representation of the function code.</returns>
-        public static ModbusPublicFunctionCode ToError(this ModbusPublicFunctionCode code) => (ModbusPublicFunctionCode)((byte)code | ErrorMask);
+        public static ModbusFunctionCode ToError(this ModbusFunctionCode code) => (ModbusFunctionCode)((byte)code | ErrorMask);
 
         /// <summary>
         /// Removes the error representation from the given function code.
         /// </summary>
         /// <param name="code">The function code to modify.</param>
         /// <returns>The function code without the error representation.</returns>
-        public static ModbusPublicFunctionCode WithoutError(this ModbusPublicFunctionCode code) => (ModbusPublicFunctionCode)((byte)code & 0b0111_1111);
+        public static ModbusFunctionCode WithoutError(this ModbusFunctionCode code) => (ModbusFunctionCode)((byte)code & 0b0111_1111);
     }
 }

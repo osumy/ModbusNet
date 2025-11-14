@@ -13,17 +13,17 @@ namespace ModbusNet.Transport
 
             return functionCode switch
             {
-                (byte)ModbusPublicFunctionCode.Read_Discrete_Inputs =>
+                (byte)ModbusFunctionCode.Read_Discrete_Inputs =>
                     ReadDiscreteInputsMessage.ParseResponsePDU(pdu),
-                (byte)ModbusPublicFunctionCode.Read_Coils =>
+                (byte)ModbusFunctionCode.Read_Coils =>
                     ReadCoilsMessage.ParseResponsePDU(pdu),
-                (byte)ModbusPublicFunctionCode.Read_Input_Registers =>
+                (byte)ModbusFunctionCode.Read_Input_Registers =>
                     ReadInputRegistersMessage.ParseResponsePDU(pdu),
-                (byte)ModbusPublicFunctionCode.Read_Multiple_Holding_Registers =>
+                (byte)ModbusFunctionCode.Read_Multiple_Holding_Registers =>
                     ReadMultipleHoldingRegistersMessage.ParseResponsePDU(pdu),
-                (byte)ModbusPublicFunctionCode.ReadWrite_Multiple_Registers =>
+                (byte)ModbusFunctionCode.ReadWrite_Multiple_Registers =>
                     ReadWriteMultipleRegistersMessage.ParseResponsePDU(pdu),
-                (byte)ModbusPublicFunctionCode.Read_FIFO_Queue =>
+                (byte)ModbusFunctionCode.Read_FIFO_Queue =>
                     ReadFifoQueueMessage.ParseResponsePDU(pdu),
                 _ => throw new NotSupportedException($"Function code {functionCode:X2} not supported")
             };
@@ -39,7 +39,7 @@ namespace ModbusNet.Transport
             byte responseFC = responsePdu[0];
 
             // Check for exception using the existing extension method
-            if (((ModbusPublicFunctionCode)responseFC).IsError())
+            if (((ModbusFunctionCode)responseFC).IsError())
             {
                 if (responsePdu.Length < 2)
                     throw new InvalidOperationException("Incomplete exception response");
