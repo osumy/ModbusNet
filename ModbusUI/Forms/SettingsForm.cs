@@ -1,6 +1,6 @@
 ﻿using Modbus.Models;
-using Modbus.Models.Enums;
 using Modbus.Utils;
+using ModbusUI.Enums;
 using System.IO.Ports;
 
 namespace Modbus.Forms

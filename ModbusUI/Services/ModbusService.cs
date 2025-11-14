@@ -1,7 +1,6 @@
-﻿using Modbus.Models;
-using NModbus;
-using NModbus.Serial;
-using System.IO.Ports;
+﻿using System.IO.Ports;
+using ModbusNet;
+using ModbusNet.Device;
 
 namespace Modbus.Services
 {
@@ -12,7 +11,6 @@ namespace Modbus.Services
     public class ModbusService : IDisposable
     {
         private IModbusMaster _master;
-        private SerialPort _serialPort;
         private bool _isConnected = false;
 
         #region Connection Management
@@ -22,74 +20,26 @@ namespace Modbus.Services
         /// </summary>
         /// <param name="settings">Connection parameters</param>
         /// <returns>True if connection successful</returns>
-        public bool Connect(ConnectionSettings settings)
-        {
-            try
-            {
-                if (_isConnected) Disconnect();
+        //public bool Connect(ConnectionSettings settings)
+        //{
+        //    try
+        //    {
 
-                var factory = new ModbusFactory();
+        //        _isConnected = true;
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _isConnected = false;
+        //        return false;
+        //    }
+        //}
 
-                // Configure serial port
-                _serialPort = new SerialPort(
-                    portName: settings.portName.ToString(),
-                    baudRate: settings.baudRate,
-                    parity: settings.parity,
-                    dataBits: (int)settings.dataBits,
-                    stopBits: settings.stopBits)
-                {
-                    ReadTimeout = settings.responseTimeout,
-                    WriteTimeout = settings.responseTimeout,
-                    Handshake = Handshake.None
-                };
-
-                _serialPort.Open();
-                var adapter = new SerialPortAdapter(_serialPort);
-
-                // Create master based on protocol
-                _master = settings.isRTU
-                    ? factory.CreateRtuMaster(adapter)
-                    : factory.CreateAsciiMaster(adapter);
-
-                _master.Transport.Retries = settings.retryCount;
-                _master.Transport.WaitToRetryMilliseconds = settings.retryDelay;
-
-                _isConnected = true;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _isConnected = false;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Disconnects from Modbus device
-        /// </summary>
-        public void Disconnect()
-        {
-            try
-            {
-                _master?.Dispose();
-                _master = null;
-
-                if (_serialPort?.IsOpen == true)
-                {
-                    _serialPort.Close();
-                }
-                _serialPort?.Dispose();
-                _serialPort = null;
-
-                _isConnected = false;
-            }
-            catch (Exception ex) {}
-        }
 
         /// <summary>
         /// Checks if connected to Modbus device
         /// </summary>
-        public bool IsConnected => _isConnected && _serialPort?.IsOpen == true;
+        public bool IsConnected => _isConnected;
 
         #endregion
 
@@ -102,11 +52,11 @@ namespace Modbus.Services
         /// <param name="startAddress">Starting register address</param>
         /// <param name="numberOfPoints">Number of registers to read</param>
         /// <returns>Array of register values</returns>
-        public ushort[] ReadHoldingRegisters(byte slaveId, ushort startAddress, ushort numberOfPoints)
-        {
-            ValidateConnection();
-            return _master.ReadHoldingRegisters(slaveId, startAddress, numberOfPoints);
-        }
+        //public ushort[] ReadHoldingRegisters(byte slaveId, ushort startAddress, ushort numberOfPoints)
+        //{
+        //    ValidateConnection();
+        //    //return _master.ReadHoldingRegisters(slaveId, startAddress, numberOfPoints);
+        //}
 
         /// <summary>
         /// Writes single holding register (Function Code 06)
@@ -117,7 +67,7 @@ namespace Modbus.Services
         public void WriteSingleRegister(byte slaveId, ushort registerAddress, ushort value)
         {
             ValidateConnection();
-            _master.WriteSingleRegister(slaveId, registerAddress, value);
+            //_master.WriteSingleRegister(slaveId, registerAddress, value);
         }
 
         /// <summary>
@@ -129,7 +79,7 @@ namespace Modbus.Services
         public void WriteMultipleRegisters(byte slaveId, ushort startAddress, ushort[] data)
         {
             ValidateConnection();
-            _master.WriteMultipleRegisters(slaveId, startAddress, data);
+            //_master.WriteMultipleRegisters(slaveId, startAddress, data);
         }
 
         #endregion
@@ -155,11 +105,11 @@ namespace Modbus.Services
         /// <param name="slaveId">Slave device ID</param>
         /// <param name="coilAddress">Coil address to write</param>
         /// <param name="value">Value to write (true=ON, false=OFF)</param>
-        public void WriteSingleCoil(byte slaveId, ushort coilAddress, bool value)
-        {
-            ValidateConnection();
-            _master.WriteSingleCoil(slaveId, coilAddress, value);
-        }
+        //public void WriteSingleCoil(byte slaveId, ushort coilAddress, bool value)
+        //{
+        //    ValidateConnection();
+        //    _master.WriteSingleCoil(slaveId, coilAddress, value);
+        //}
 
         /// <summary>
         /// Writes multiple coils (Function Code 15)
@@ -201,11 +151,11 @@ namespace Modbus.Services
         /// <param name="startAddress">Starting input address</param>
         /// <param name="numberOfPoints">Number of inputs to read</param>
         /// <returns>Array of input states</returns>
-        public bool[] ReadInputs(byte slaveId, ushort startAddress, ushort numberOfPoints)
-        {
-            ValidateConnection();
-            return _master.ReadInputs(slaveId, startAddress, numberOfPoints);
-        }
+        //public bool[] ReadInputs(byte slaveId, ushort startAddress, ushort numberOfPoints)
+        //{
+        //    ValidateConnection();
+        //    return _master.ReadInputs(slaveId, startAddress, numberOfPoints);
+        //}
 
         #endregion
 
@@ -217,19 +167,19 @@ namespace Modbus.Services
         /// <param name="slaveId">Slave device ID to test</param>
         /// <param name="testAddress">Register address to read for test</param>
         /// <returns>True if communication successful</returns>
-        public bool TestConnection(byte slaveId, ushort testAddress = 0)
-        {
-            try
-            {
-                ValidateConnection();
-                var result = _master.ReadHoldingRegisters(slaveId, testAddress, 1);
-                return result != null && result.Length == 1;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        //public bool TestConnection(byte slaveId, ushort testAddress = 0)
+        //{
+        //    try
+        //    {
+        //        ValidateConnection();
+        //        var result = _master.ReadHoldingRegisters(slaveId, testAddress, 1);
+        //        return result != null && result.Length == 1;
+        //    }
+        //    catch
+        //    {
+        //        return false;
+        //    }
+        //}
 
         /// <summary>
         /// Reads and writes to verify communication (echo test)
@@ -238,28 +188,28 @@ namespace Modbus.Services
         /// <param name="testAddress">Register address for test</param>
         /// <param name="testValue">Value to write and read back</param>
         /// <returns>True if write/read back matches</returns>
-        public bool EchoTest(byte slaveId, ushort testAddress, ushort testValue)
-        {
-            try
-            {
-                ValidateConnection();
+        //public bool EchoTest(byte slaveId, ushort testAddress, ushort testValue)
+        //{
+        //    try
+        //    {
+        //        ValidateConnection();
 
-                // Write test value
-                _master.WriteSingleRegister(slaveId, testAddress, testValue);
+        //        // Write test value
+        //        _master.WriteSingleRegister(slaveId, testAddress, testValue);
 
-                // Small delay to ensure write completes
-                System.Threading.Thread.Sleep(50);
+        //        // Small delay to ensure write completes
+        //        System.Threading.Thread.Sleep(50);
 
-                // Read back
-                var readBack = _master.ReadHoldingRegisters(slaveId, testAddress, 1);
+        //        // Read back
+        //        var readBack = _master.ReadHoldingRegisters(slaveId, testAddress, 1);
 
-                return readBack.Length > 0 && readBack[0] == testValue;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        //        return readBack.Length > 0 && readBack[0] == testValue;
+        //    }
+        //    catch
+        //    {
+        //        return false;
+        //    }
+        //}
 
         /// <summary>
         /// Reads a range of registers and returns as 32-bit integers
@@ -268,18 +218,18 @@ namespace Modbus.Services
         /// <param name="startAddress">Starting register address</param>
         /// <param name="numberOfRegisters">Number of 16-bit registers to read</param>
         /// <returns>Array of 32-bit integers</returns>
-        public int[] ReadRegistersAsInt32(byte slaveId, ushort startAddress, ushort numberOfRegisters)
-        {
-            var registers = ReadHoldingRegisters(slaveId, startAddress, (ushort)(numberOfRegisters * 2));
-            var result = new int[numberOfRegisters];
+        //public int[] ReadRegistersAsInt32(byte slaveId, ushort startAddress, ushort numberOfRegisters)
+        //{
+        //    var registers = ReadHoldingRegisters(slaveId, startAddress, (ushort)(numberOfRegisters * 2));
+        //    var result = new int[numberOfRegisters];
 
-            for (int i = 0; i < numberOfRegisters; i++)
-            {
-                result[i] = (registers[i * 2] << 16) | registers[i * 2 + 1];
-            }
+        //    for (int i = 0; i < numberOfRegisters; i++)
+        //    {
+        //        result[i] = (registers[i * 2] << 16) | registers[i * 2 + 1];
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
         #endregion
 
@@ -306,7 +256,7 @@ namespace Modbus.Services
             {
                 if (disposing)
                 {
-                    Disconnect();
+                    
                 }
                 _disposed = true;
             }

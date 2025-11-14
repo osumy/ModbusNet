@@ -40,37 +40,37 @@ namespace Modbus.Forms
             }
             else
             {
-                bool res = _modbusService.Connect(_settings);
-                if (!res)
-                {
-                    MessageBox.Show("Connection Failed!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    labelConnectionStatus.Text = "Not Connected.";
-                    labelConnectionStatus.ForeColor = SystemColors.ControlText;
-                    textBoxSlaveId.Enabled = true;
-                }
-                else
-                {
-                    labelConnectionStatus.Text = "Connected!";
-                    labelConnectionStatus.ForeColor = Color.Green;
-                    textBoxSlaveId.Enabled = false;
-                    _slaveId = Byte.Parse(txt);
-                }
+                //bool res = _modbusService.Connect(_settings);
+                //if (!res)
+                //{
+                //    MessageBox.Show("Connection Failed!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                //    labelConnectionStatus.Text = "Not Connected.";
+                //    labelConnectionStatus.ForeColor = SystemColors.ControlText;
+                //    textBoxSlaveId.Enabled = true;
+                //}
+                //else
+                //{
+                //    labelConnectionStatus.Text = "Connected!";
+                //    labelConnectionStatus.ForeColor = Color.Green;
+                //    textBoxSlaveId.Enabled = false;
+                //    _slaveId = Byte.Parse(txt);
+                //}
             }
         }
 
         private void buttonRead_Click(object sender, EventArgs e)
         {
-            var regs = _modbusService.ReadHoldingRegisters(
-                _slaveId,
-                UInt16.Parse(textBoxStartAddress.Text),
-                UInt16.Parse(textBoxRegisterNum.Text));
+            //var regs = _modbusService.ReadHoldingRegisters(
+            //    _slaveId,
+            //    UInt16.Parse(textBoxStartAddress.Text),
+            //    UInt16.Parse(textBoxRegisterNum.Text));
 
-            string txt = "";
-            foreach (var reg in regs)
-            {
-                txt += reg.ToString() + "\n";
-            }
-            richTextBoxResult.Text = txt;
+            //string txt = "";
+            //foreach (var reg in regs)
+            //{
+            //    txt += reg.ToString() + "\n";
+            //}
+            //richTextBoxResult.Text = txt;
         }
 
         private void buttonWrite_Click(object sender, EventArgs e)
