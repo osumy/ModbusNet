@@ -1,8 +1,6 @@
-﻿using System.IO.Ports;
-using ModbusNet;
-using ModbusNet.Device;
+﻿using ModbusNet.Device;
 
-namespace Modbus.Services
+namespace ModbusUI.Services
 {
     /// <summary>
     /// Comprehensive Modbus service for serial communication

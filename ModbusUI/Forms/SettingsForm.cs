@@ -1,17 +1,18 @@
-﻿using Modbus.Models;
-using Modbus.Utils;
+﻿using ModbusNet;
+using ModbusNet.Enum;
 using ModbusUI.Enums;
+using ModbusUI.Utils;
 using System.IO.Ports;
 
 namespace Modbus.Forms
 {
     public partial class SettingsForm : Form
     {
-        public ConnectionSettings Settings { get; private set; }
+        public ModbusSettings Settings { get; private set; }
 
         private string[] baudRates = { "9600 Baud Rate", "19200 Baud Rate", "38400 Baud Rate" };
 
-        public SettingsForm(ConnectionSettings currentSettings)
+        public SettingsForm(ModbusSettings currentSettings)
         {
             InitializeComponent();
 

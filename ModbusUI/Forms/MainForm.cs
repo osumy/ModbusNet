@@ -1,12 +1,11 @@
-﻿using Modbus.Models;
-using Modbus.Services;
-using static System.Net.Mime.MediaTypeNames;
+﻿using ModbusNet;
+using ModbusUI.Services;
 
 namespace Modbus.Forms
 {
     public partial class MainForm : Form
     {
-        private ConnectionSettings _settings;
+        private ModbusSettings _settings;
         private ModbusService _modbusService;
         private byte _slaveId;
 
@@ -14,7 +13,7 @@ namespace Modbus.Forms
         {
             InitializeComponent();
 
-            _settings = new ConnectionSettings();
+            _settings = ModbusSettings.Default;
             _modbusService = new ModbusService();
         }
 

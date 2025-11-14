@@ -1,13 +1,11 @@
-﻿using System.ComponentModel;
-
-namespace ModbusNet.Enum
+﻿namespace ModbusNet.Enum
 {
     public enum ConnectionType
     {
-        [Description("Serial Port")]
-        SerialPort,
+        ASCII,
 
-        [Description("TCP/IP")]
-        TcpIp
+        RTU,
+
+        TCP
     }
 }

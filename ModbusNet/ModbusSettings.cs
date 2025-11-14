@@ -9,8 +9,9 @@ namespace ModbusNet
 
         #region General Settings
 
-        public byte retryCount { get; set; } = 3;
-        public int retryDelayMs { get; set; } = 50;
+        public ConnectionType ConnectionType { get; set; } = ConnectionType.ASCII;
+        public byte RetryCount { get; set; } = 3;
+        public int RetryDelayMs { get; set; } = 50;
 
         #endregion
 

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 
-namespace Modbus.Utils
+namespace ModbusUI.Utils
 {
     public static class EnumExtensions
     {

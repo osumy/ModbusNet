@@ -41,7 +41,7 @@ namespace ModbusNet.Transport
             }
 
 
-            for (int attempt = 0; attempt <= _settings.retryCount; attempt++)
+            for (int attempt = 0; attempt <= _settings.RetryCount; attempt++)
             {
                 try
                 { 
@@ -55,13 +55,13 @@ namespace ModbusNet.Transport
 
                     return BuildResponse(responsePDU);
                 }
-                catch (TimeoutException) when (attempt < _settings.retryCount)
+                catch (TimeoutException) when (attempt < _settings.RetryCount)
                 {
-                    Thread.Sleep(_settings.retryDelayMs);
+                    Thread.Sleep(_settings.RetryDelayMs);
                 }
             }
 
-            throw new TimeoutException($"Request failed after {_settings.retryCount + 1} attempts");
+            throw new TimeoutException($"Request failed after {_settings.RetryCount + 1} attempts");
         }
 
         public override void SendRequestIgnoreResponse(byte[] request)
@@ -74,7 +74,7 @@ namespace ModbusNet.Transport
             }
 
 
-            for (int attempt = 0; attempt <= _settings.retryCount; attempt++)
+            for (int attempt = 0; attempt <= _settings.RetryCount; attempt++)
             {
                 try
                 {
@@ -87,13 +87,13 @@ namespace ModbusNet.Transport
 
                     ValidatePDU(responsePDU, AsciiUtility.FromAsciiBytes(fcAscii)[0]);
                 }
-                catch (TimeoutException) when (attempt < _settings.retryCount)
+                catch (TimeoutException) when (attempt < _settings.RetryCount)
                 {
-                    Thread.Sleep(_settings.retryDelayMs);
+                    Thread.Sleep(_settings.RetryDelayMs);
                 }
             }
 
-            throw new TimeoutException($"Request failed after {_settings.retryCount + 1} attempts");
+            throw new TimeoutException($"Request failed after {_settings.RetryCount + 1} attempts");
         }
 
         private byte[] ReceiveResponse()
@@ -195,7 +195,7 @@ namespace ModbusNet.Transport
             ThrowIfDisposed();
             if (!IsConnected) throw new InvalidOperationException("Serial port is not connected.");
 
-            for (int attempt = 0; attempt <= _settings.retryCount; attempt++)
+            for (int attempt = 0; attempt <= _settings.RetryCount; attempt++)
             {
                 try
                 {
@@ -206,17 +206,17 @@ namespace ModbusNet.Transport
                 {
                     throw;
                 }
-                catch (TimeoutException) when (attempt < _settings.retryCount)
+                catch (TimeoutException) when (attempt < _settings.RetryCount)
                 {
-                    await Task.Delay(_settings.retryDelayMs, cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(_settings.RetryDelayMs, cancellationToken).ConfigureAwait(false);
                 }
-                catch (IOException) when (attempt < _settings.retryCount)
+                catch (IOException) when (attempt < _settings.RetryCount)
                 {
-                    await Task.Delay(_settings.retryDelayMs, cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(_settings.RetryDelayMs, cancellationToken).ConfigureAwait(false);
                 }
             }
 
-            throw new TimeoutException($"Write failed after {_settings.retryCount + 1} attempts");
+            throw new TimeoutException($"Write failed after {_settings.RetryCount + 1} attempts");
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace ModbusNet.Transport
             ThrowIfDisposed();
             if (!IsConnected) throw new InvalidOperationException("Serial port is not connected.");
 
-            for (int attempt = 0; attempt <= _settings.retryCount; attempt++)
+            for (int attempt = 0; attempt <= _settings.RetryCount; attempt++)
             {
                 using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
                 linkedCts.CancelAfter(timeout);
@@ -249,22 +249,22 @@ namespace ModbusNet.Transport
                     // user cancellation - rethrow as is
                     throw;
                 }
-                catch (OperationCanceledException) when (attempt < _settings.retryCount)
+                catch (OperationCanceledException) when (attempt < _settings.RetryCount)
                 {
                     // timeout for this attempt - retry after delay
-                    await Task.Delay(_settings.retryDelayMs, cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(_settings.RetryDelayMs, cancellationToken).ConfigureAwait(false);
                 }
-                catch (TimeoutException) when (attempt < _settings.retryCount)
+                catch (TimeoutException) when (attempt < _settings.RetryCount)
                 {
-                    await Task.Delay(_settings.retryDelayMs, cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(_settings.RetryDelayMs, cancellationToken).ConfigureAwait(false);
                 }
-                catch (IOException) when (attempt < _settings.retryCount)
+                catch (IOException) when (attempt < _settings.RetryCount)
                 {
-                    await Task.Delay(_settings.retryDelayMs, cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(_settings.RetryDelayMs, cancellationToken).ConfigureAwait(false);
                 }
             }
 
-            throw new TimeoutException($"Request failed after {_settings.retryCount + 1} attempts");
+            throw new TimeoutException($"Request failed after {_settings.RetryCount + 1} attempts");
         }
 
 
