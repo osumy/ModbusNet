@@ -36,27 +36,28 @@
             textBoxCount = new TextBox();
             textBoxStartAddress = new TextBox();
             groupBox2 = new GroupBox();
-            dataGridViewValues = new DataGridView();
-            Column1 = new DataGridViewTextBoxColumn();
-            Column2 = new DataGridViewTextBoxColumn();
             buttonExecute = new Button();
             checkBoxCoilValue = new CheckBox();
             labelCount = new Label();
             labelStartAddress = new Label();
             numericUpDownCount = new NumericUpDown();
             comboBoxFC = new ComboBox();
+            dataGridViewValues = new DataGridView();
+            Address = new DataGridViewTextBoxColumn();
+            Value = new DataGridViewTextBoxColumn();
+            Hex = new DataGridViewTextBoxColumn();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dataGridViewValues).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownCount).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewValues).BeginInit();
             SuspendLayout();
             // 
             // buttonConnectionSettings
             // 
-            buttonConnectionSettings.Location = new Point(12, 13);
+            buttonConnectionSettings.Location = new Point(194, 21);
             buttonConnectionSettings.Margin = new Padding(3, 4, 3, 4);
             buttonConnectionSettings.Name = "buttonConnectionSettings";
-            buttonConnectionSettings.Size = new Size(178, 69);
+            buttonConnectionSettings.Size = new Size(113, 91);
             buttonConnectionSettings.TabIndex = 0;
             buttonConnectionSettings.Text = "Connection Settings";
             buttonConnectionSettings.UseVisualStyleBackColor = true;
@@ -87,7 +88,7 @@
             groupBox1.Controls.Add(labelConnectionStatus);
             groupBox1.Controls.Add(textBoxSlaveId);
             groupBox1.Controls.Add(connectBtn);
-            groupBox1.Location = new Point(14, 100);
+            groupBox1.Location = new Point(12, 13);
             groupBox1.Margin = new Padding(3, 4, 3, 4);
             groupBox1.Name = "groupBox1";
             groupBox1.Padding = new Padding(3, 4, 3, 4);
@@ -108,7 +109,7 @@
             // 
             // textBoxCount
             // 
-            textBoxCount.Location = new Point(587, 26);
+            textBoxCount.Location = new Point(127, 105);
             textBoxCount.Margin = new Padding(3, 4, 3, 4);
             textBoxCount.Name = "textBoxCount";
             textBoxCount.Size = new Size(128, 27);
@@ -117,57 +118,33 @@
             // 
             // textBoxStartAddress
             // 
-            textBoxStartAddress.Location = new Point(379, 26);
+            textBoxStartAddress.Location = new Point(127, 66);
             textBoxStartAddress.Margin = new Padding(3, 4, 3, 4);
             textBoxStartAddress.Name = "textBoxStartAddress";
             textBoxStartAddress.Size = new Size(128, 27);
             textBoxStartAddress.TabIndex = 1;
+            textBoxStartAddress.TextChanged += textBoxStartAddress_TextChanged;
             // 
             // groupBox2
             // 
-            groupBox2.Controls.Add(dataGridViewValues);
             groupBox2.Controls.Add(buttonExecute);
             groupBox2.Controls.Add(checkBoxCoilValue);
-            groupBox2.Controls.Add(textBoxCount);
             groupBox2.Controls.Add(labelCount);
             groupBox2.Controls.Add(labelStartAddress);
             groupBox2.Controls.Add(numericUpDownCount);
             groupBox2.Controls.Add(textBoxStartAddress);
             groupBox2.Controls.Add(comboBoxFC);
-            groupBox2.Location = new Point(14, 206);
+            groupBox2.Controls.Add(textBoxCount);
+            groupBox2.Location = new Point(14, 132);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(888, 382);
+            groupBox2.Size = new Size(293, 382);
             groupBox2.TabIndex = 5;
             groupBox2.TabStop = false;
             groupBox2.Text = "Function";
             // 
-            // dataGridViewValues
-            // 
-            dataGridViewValues.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewValues.Columns.AddRange(new DataGridViewColumn[] { Column1, Column2 });
-            dataGridViewValues.Location = new Point(6, 60);
-            dataGridViewValues.Name = "dataGridViewValues";
-            dataGridViewValues.RowHeadersWidth = 51;
-            dataGridViewValues.Size = new Size(876, 316);
-            dataGridViewValues.TabIndex = 6;
-            // 
-            // Column1
-            // 
-            Column1.HeaderText = "Column1";
-            Column1.MinimumWidth = 6;
-            Column1.Name = "Column1";
-            Column1.Width = 125;
-            // 
-            // Column2
-            // 
-            Column2.HeaderText = "Column2";
-            Column2.MinimumWidth = 6;
-            Column2.Name = "Column2";
-            Column2.Width = 125;
-            // 
             // buttonExecute
             // 
-            buttonExecute.Location = new Point(775, 24);
+            buttonExecute.Location = new Point(9, 342);
             buttonExecute.Name = "buttonExecute";
             buttonExecute.Size = new Size(107, 29);
             buttonExecute.TabIndex = 5;
@@ -178,7 +155,7 @@
             // checkBoxCoilValue
             // 
             checkBoxCoilValue.AutoSize = true;
-            checkBoxCoilValue.Location = new Point(645, 31);
+            checkBoxCoilValue.Location = new Point(237, 110);
             checkBoxCoilValue.Name = "checkBoxCoilValue";
             checkBoxCoilValue.Size = new Size(18, 17);
             checkBoxCoilValue.TabIndex = 4;
@@ -188,7 +165,7 @@
             // labelCount
             // 
             labelCount.AutoSize = true;
-            labelCount.Location = new Point(513, 28);
+            labelCount.Location = new Point(6, 110);
             labelCount.Name = "labelCount";
             labelCount.Size = new Size(68, 20);
             labelCount.TabIndex = 3;
@@ -197,7 +174,7 @@
             // labelStartAddress
             // 
             labelStartAddress.AutoSize = true;
-            labelStartAddress.Location = new Point(273, 29);
+            labelStartAddress.Location = new Point(6, 69);
             labelStartAddress.Name = "labelStartAddress";
             labelStartAddress.Size = new Size(100, 20);
             labelStartAddress.TabIndex = 2;
@@ -205,10 +182,11 @@
             // 
             // numericUpDownCount
             // 
-            numericUpDownCount.Location = new Point(601, 27);
+            numericUpDownCount.Location = new Point(127, 106);
             numericUpDownCount.Name = "numericUpDownCount";
-            numericUpDownCount.Size = new Size(114, 27);
+            numericUpDownCount.Size = new Size(128, 27);
             numericUpDownCount.TabIndex = 1;
+            numericUpDownCount.ValueChanged += numericUpDownCount_ValueChanged;
             // 
             // comboBoxFC
             // 
@@ -220,11 +198,45 @@
             comboBoxFC.TabIndex = 0;
             comboBoxFC.SelectedIndexChanged += comboBoxFC_SelectedIndexChanged;
             // 
+            // dataGridViewValues
+            // 
+            dataGridViewValues.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewValues.Columns.AddRange(new DataGridViewColumn[] { Address, Value, Hex });
+            dataGridViewValues.Location = new Point(330, 21);
+            dataGridViewValues.Name = "dataGridViewValues";
+            dataGridViewValues.RowHeadersWidth = 51;
+            dataGridViewValues.Size = new Size(428, 493);
+            dataGridViewValues.TabIndex = 6;
+            // 
+            // Address
+            // 
+            Address.HeaderText = "Address";
+            Address.MinimumWidth = 6;
+            Address.Name = "Address";
+            Address.ReadOnly = true;
+            Address.Resizable = DataGridViewTriState.False;
+            Address.Width = 125;
+            // 
+            // Value
+            // 
+            Value.HeaderText = "Value";
+            Value.MinimumWidth = 6;
+            Value.Name = "Value";
+            Value.Width = 125;
+            // 
+            // Hex
+            // 
+            Hex.HeaderText = "Hex";
+            Hex.MinimumWidth = 6;
+            Hex.Name = "Hex";
+            Hex.Width = 125;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(914, 600);
+            ClientSize = new Size(770, 526);
+            Controls.Add(dataGridViewValues);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(buttonConnectionSettings);
@@ -236,8 +248,8 @@
             groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dataGridViewValues).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericUpDownCount).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewValues).EndInit();
             ResumeLayout(false);
         }
 
@@ -253,12 +265,13 @@
         private GroupBox groupBox2;
         private ComboBox comboBoxFC;
         private DataGridView dataGridViewValues;
-        private DataGridViewTextBoxColumn Column1;
-        private DataGridViewTextBoxColumn Column2;
         private NumericUpDown numericUpDownCount;
         private Label labelStartAddress;
         private Label labelCount;
         private CheckBox checkBoxCoilValue;
         private Button buttonExecute;
+        private DataGridViewTextBoxColumn Address;
+        private DataGridViewTextBoxColumn Value;
+        private DataGridViewTextBoxColumn Hex;
     }
 }
