@@ -41,7 +41,7 @@ namespace ModbusNet.Transport
             }
 
 
-            for (int attempt = 0; attempt <= _settings.RetryCount; attempt++)
+            for (int attempt = 0; attempt < _settings.RetryCount; attempt++)
             {
                 try
                 { 
@@ -75,7 +75,7 @@ namespace ModbusNet.Transport
             }
 
 
-            for (int attempt = 0; attempt <= _settings.RetryCount; attempt++)
+            for (int attempt = 0; attempt < _settings.RetryCount; attempt++)
             {
                 try
                 {
