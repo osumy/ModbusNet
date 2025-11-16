@@ -51,7 +51,8 @@ namespace ModbusNet.Transport
                     var fcAscii = new byte[2];
                     Array.Copy(request, 3, fcAscii, 0, fcAscii.Length);
 
-                    ValidatePDU(responsePDU, AsciiUtility.FromAsciiBytes(fcAscii)[0]);
+                    ValidateFC(responsePDU, AsciiUtility.FromAsciiBytes(fcAscii)[0]);
+                    ValidateByteCount(responsePDU, AsciiUtility.FromAsciiBytes(fcAscii)[0]);
 
                     return BuildResponse(responsePDU);
                 }
@@ -85,7 +86,8 @@ namespace ModbusNet.Transport
                     var fcAscii = new byte[2];
                     Array.Copy(request, 3, fcAscii, 0, fcAscii.Length);
 
-                    ValidatePDU(responsePDU, AsciiUtility.FromAsciiBytes(fcAscii)[0]);
+                    ValidateFC(responsePDU, AsciiUtility.FromAsciiBytes(fcAscii)[0]);
+                    return;
                 }
                 catch (TimeoutException) when (attempt < _settings.RetryCount)
                 {
@@ -240,7 +242,8 @@ namespace ModbusNet.Transport
                     // extract function code from request (you used bytes 3..4 previously)
                     var fcAscii = new byte[2];
                     Array.Copy(request, 3, fcAscii, 0, fcAscii.Length);
-                    ValidatePDU(responsePDU, AsciiUtility.FromAsciiBytes(fcAscii)[0]);
+                    ValidateFC(responsePDU, AsciiUtility.FromAsciiBytes(fcAscii)[0]);
+                    ValidateByteCount(responsePDU, AsciiUtility.FromAsciiBytes(fcAscii)[0]);
 
                     return BuildResponse(responsePDU);
                 }

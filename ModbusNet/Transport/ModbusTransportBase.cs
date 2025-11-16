@@ -31,7 +31,7 @@ namespace ModbusNet.Transport
 
         public abstract ModbusResponse SendRequestReceiveResponse(byte[] request);
         public abstract void SendRequestIgnoreResponse(byte[] request);
-        public void ValidatePDU(byte[] responsePdu, byte expectedFunctionCode)
+        public void ValidateFC(byte[] responsePdu, byte expectedFunctionCode)
         {
             if (responsePdu == null || responsePdu.Length == 0)
                 throw new ArgumentException("Response PDU is empty");
@@ -51,7 +51,9 @@ namespace ModbusNet.Transport
             // Validate function code matches expected
             if (responseFC != expectedFunctionCode)
                 throw new InvalidOperationException($"Unexpected function code: expected {expectedFunctionCode:X2}, got {responseFC:X2}");
-
+        }
+        public void ValidateByteCount(byte[] responsePdu, byte expectedFunctionCode)
+        {
             byte byteCount = responsePdu[1];
 
             if (byteCount != responsePdu.Length - 2)
