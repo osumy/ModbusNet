@@ -33,23 +33,30 @@
             connectBtn = new Button();
             groupBox1 = new GroupBox();
             labelConnectionStatus = new Label();
-            groupBoxHoldingRegisters = new GroupBox();
-            richTextBoxResult = new RichTextBox();
-            textBoxValue = new TextBox();
-            textBoxRegisterNum = new TextBox();
+            textBoxCount = new TextBox();
             textBoxStartAddress = new TextBox();
-            buttonWrite = new Button();
-            buttonRead = new Button();
+            groupBox2 = new GroupBox();
+            dataGridViewValues = new DataGridView();
+            Column1 = new DataGridViewTextBoxColumn();
+            Column2 = new DataGridViewTextBoxColumn();
+            buttonExecute = new Button();
+            checkBoxCoilValue = new CheckBox();
+            labelCount = new Label();
+            labelStartAddress = new Label();
+            numericUpDownCount = new NumericUpDown();
+            comboBoxFC = new ComboBox();
             groupBox1.SuspendLayout();
-            groupBoxHoldingRegisters.SuspendLayout();
+            groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewValues).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownCount).BeginInit();
             SuspendLayout();
             // 
             // buttonConnectionSettings
             // 
-            buttonConnectionSettings.Location = new Point(317, 143);
+            buttonConnectionSettings.Location = new Point(12, 13);
             buttonConnectionSettings.Margin = new Padding(3, 4, 3, 4);
             buttonConnectionSettings.Name = "buttonConnectionSettings";
-            buttonConnectionSettings.Size = new Size(176, 69);
+            buttonConnectionSettings.Size = new Size(178, 69);
             buttonConnectionSettings.TabIndex = 0;
             buttonConnectionSettings.Text = "Connection Settings";
             buttonConnectionSettings.UseVisualStyleBackColor = true;
@@ -66,7 +73,7 @@
             // 
             // connectBtn
             // 
-            connectBtn.Location = new Point(72, 28);
+            connectBtn.Location = new Point(84, 28);
             connectBtn.Margin = new Padding(3, 4, 3, 4);
             connectBtn.Name = "connectBtn";
             connectBtn.Size = new Size(86, 28);
@@ -80,7 +87,7 @@
             groupBox1.Controls.Add(labelConnectionStatus);
             groupBox1.Controls.Add(textBoxSlaveId);
             groupBox1.Controls.Add(connectBtn);
-            groupBox1.Location = new Point(14, 124);
+            groupBox1.Location = new Point(14, 100);
             groupBox1.Margin = new Padding(3, 4, 3, 4);
             groupBox1.Name = "groupBox1";
             groupBox1.Padding = new Padding(3, 4, 3, 4);
@@ -99,84 +106,126 @@
             labelConnectionStatus.TabIndex = 3;
             labelConnectionStatus.Text = "Not Connected.";
             // 
-            // groupBoxHoldingRegisters
+            // textBoxCount
             // 
-            groupBoxHoldingRegisters.Controls.Add(richTextBoxResult);
-            groupBoxHoldingRegisters.Controls.Add(textBoxValue);
-            groupBoxHoldingRegisters.Controls.Add(textBoxRegisterNum);
-            groupBoxHoldingRegisters.Controls.Add(textBoxStartAddress);
-            groupBoxHoldingRegisters.Controls.Add(buttonWrite);
-            groupBoxHoldingRegisters.Controls.Add(buttonRead);
-            groupBoxHoldingRegisters.Location = new Point(14, 245);
-            groupBoxHoldingRegisters.Margin = new Padding(3, 4, 3, 4);
-            groupBoxHoldingRegisters.Name = "groupBoxHoldingRegisters";
-            groupBoxHoldingRegisters.Padding = new Padding(3, 4, 3, 4);
-            groupBoxHoldingRegisters.Size = new Size(351, 296);
-            groupBoxHoldingRegisters.TabIndex = 4;
-            groupBoxHoldingRegisters.TabStop = false;
-            groupBoxHoldingRegisters.Text = "Holding Registers";
-            // 
-            // richTextBoxResult
-            // 
-            richTextBoxResult.Location = new Point(7, 109);
-            richTextBoxResult.Margin = new Padding(3, 4, 3, 4);
-            richTextBoxResult.Name = "richTextBoxResult";
-            richTextBoxResult.Size = new Size(332, 185);
-            richTextBoxResult.TabIndex = 4;
-            richTextBoxResult.Text = "";
-            // 
-            // textBoxValue
-            // 
-            textBoxValue.Location = new Point(7, 68);
-            textBoxValue.Margin = new Padding(3, 4, 3, 4);
-            textBoxValue.Name = "textBoxValue";
-            textBoxValue.Size = new Size(114, 27);
-            textBoxValue.TabIndex = 3;
-            // 
-            // textBoxRegisterNum
-            // 
-            textBoxRegisterNum.Location = new Point(133, 29);
-            textBoxRegisterNum.Margin = new Padding(3, 4, 3, 4);
-            textBoxRegisterNum.Name = "textBoxRegisterNum";
-            textBoxRegisterNum.Size = new Size(114, 27);
-            textBoxRegisterNum.TabIndex = 2;
+            textBoxCount.Location = new Point(587, 26);
+            textBoxCount.Margin = new Padding(3, 4, 3, 4);
+            textBoxCount.Name = "textBoxCount";
+            textBoxCount.Size = new Size(128, 27);
+            textBoxCount.TabIndex = 3;
+            textBoxCount.Visible = false;
             // 
             // textBoxStartAddress
             // 
-            textBoxStartAddress.Location = new Point(7, 29);
+            textBoxStartAddress.Location = new Point(379, 26);
             textBoxStartAddress.Margin = new Padding(3, 4, 3, 4);
             textBoxStartAddress.Name = "textBoxStartAddress";
-            textBoxStartAddress.Size = new Size(114, 27);
+            textBoxStartAddress.Size = new Size(128, 27);
             textBoxStartAddress.TabIndex = 1;
             // 
-            // buttonWrite
+            // groupBox2
             // 
-            buttonWrite.Location = new Point(254, 68);
-            buttonWrite.Margin = new Padding(3, 4, 3, 4);
-            buttonWrite.Name = "buttonWrite";
-            buttonWrite.Size = new Size(86, 31);
-            buttonWrite.TabIndex = 0;
-            buttonWrite.Text = "Write";
-            buttonWrite.UseVisualStyleBackColor = true;
-            buttonWrite.Click += buttonWrite_Click;
+            groupBox2.Controls.Add(dataGridViewValues);
+            groupBox2.Controls.Add(buttonExecute);
+            groupBox2.Controls.Add(checkBoxCoilValue);
+            groupBox2.Controls.Add(textBoxCount);
+            groupBox2.Controls.Add(labelCount);
+            groupBox2.Controls.Add(labelStartAddress);
+            groupBox2.Controls.Add(numericUpDownCount);
+            groupBox2.Controls.Add(textBoxStartAddress);
+            groupBox2.Controls.Add(comboBoxFC);
+            groupBox2.Location = new Point(14, 206);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(888, 382);
+            groupBox2.TabIndex = 5;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Function";
             // 
-            // buttonRead
+            // dataGridViewValues
             // 
-            buttonRead.Location = new Point(254, 28);
-            buttonRead.Margin = new Padding(3, 4, 3, 4);
-            buttonRead.Name = "buttonRead";
-            buttonRead.Size = new Size(86, 31);
-            buttonRead.TabIndex = 0;
-            buttonRead.Text = "Read";
-            buttonRead.UseVisualStyleBackColor = true;
-            buttonRead.Click += buttonRead_Click;
+            dataGridViewValues.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewValues.Columns.AddRange(new DataGridViewColumn[] { Column1, Column2 });
+            dataGridViewValues.Location = new Point(6, 60);
+            dataGridViewValues.Name = "dataGridViewValues";
+            dataGridViewValues.RowHeadersWidth = 51;
+            dataGridViewValues.Size = new Size(876, 316);
+            dataGridViewValues.TabIndex = 6;
+            // 
+            // Column1
+            // 
+            Column1.HeaderText = "Column1";
+            Column1.MinimumWidth = 6;
+            Column1.Name = "Column1";
+            Column1.Width = 125;
+            // 
+            // Column2
+            // 
+            Column2.HeaderText = "Column2";
+            Column2.MinimumWidth = 6;
+            Column2.Name = "Column2";
+            Column2.Width = 125;
+            // 
+            // buttonExecute
+            // 
+            buttonExecute.Location = new Point(775, 24);
+            buttonExecute.Name = "buttonExecute";
+            buttonExecute.Size = new Size(107, 29);
+            buttonExecute.TabIndex = 5;
+            buttonExecute.Text = "123";
+            buttonExecute.UseVisualStyleBackColor = true;
+            buttonExecute.Click += buttonExecute_Click;
+            // 
+            // checkBoxCoilValue
+            // 
+            checkBoxCoilValue.AutoSize = true;
+            checkBoxCoilValue.Location = new Point(645, 31);
+            checkBoxCoilValue.Name = "checkBoxCoilValue";
+            checkBoxCoilValue.Size = new Size(18, 17);
+            checkBoxCoilValue.TabIndex = 4;
+            checkBoxCoilValue.UseVisualStyleBackColor = true;
+            checkBoxCoilValue.Visible = false;
+            // 
+            // labelCount
+            // 
+            labelCount.AutoSize = true;
+            labelCount.Location = new Point(513, 28);
+            labelCount.Name = "labelCount";
+            labelCount.Size = new Size(68, 20);
+            labelCount.TabIndex = 3;
+            labelCount.Text = "Quantity:";
+            // 
+            // labelStartAddress
+            // 
+            labelStartAddress.AutoSize = true;
+            labelStartAddress.Location = new Point(273, 29);
+            labelStartAddress.Name = "labelStartAddress";
+            labelStartAddress.Size = new Size(100, 20);
+            labelStartAddress.TabIndex = 2;
+            labelStartAddress.Text = "Start Address:";
+            // 
+            // numericUpDownCount
+            // 
+            numericUpDownCount.Location = new Point(601, 27);
+            numericUpDownCount.Name = "numericUpDownCount";
+            numericUpDownCount.Size = new Size(114, 27);
+            numericUpDownCount.TabIndex = 1;
+            // 
+            // comboBoxFC
+            // 
+            comboBoxFC.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxFC.FormattingEnabled = true;
+            comboBoxFC.Location = new Point(6, 26);
+            comboBoxFC.Name = "comboBoxFC";
+            comboBoxFC.Size = new Size(249, 28);
+            comboBoxFC.TabIndex = 0;
+            comboBoxFC.SelectedIndexChanged += comboBoxFC_SelectedIndexChanged;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(914, 600);
-            Controls.Add(groupBoxHoldingRegisters);
+            Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(buttonConnectionSettings);
             Margin = new Padding(3, 4, 3, 4);
@@ -185,8 +234,10 @@
             Text = "MainForm";
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
-            groupBoxHoldingRegisters.ResumeLayout(false);
-            groupBoxHoldingRegisters.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewValues).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericUpDownCount).EndInit();
             ResumeLayout(false);
         }
 
@@ -197,12 +248,17 @@
         private Button connectBtn;
         private GroupBox groupBox1;
         private Label labelConnectionStatus;
-        private GroupBox groupBoxHoldingRegisters;
-        private Button buttonRead;
         private TextBox textBoxStartAddress;
-        private TextBox textBoxValue;
-        private TextBox textBoxRegisterNum;
-        private Button buttonWrite;
-        private RichTextBox richTextBoxResult;
+        private TextBox textBoxCount;
+        private GroupBox groupBox2;
+        private ComboBox comboBoxFC;
+        private DataGridView dataGridViewValues;
+        private DataGridViewTextBoxColumn Column1;
+        private DataGridViewTextBoxColumn Column2;
+        private NumericUpDown numericUpDownCount;
+        private Label labelStartAddress;
+        private Label labelCount;
+        private CheckBox checkBoxCoilValue;
+        private Button buttonExecute;
     }
 }
