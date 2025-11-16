@@ -37,7 +37,7 @@
         /// <param name="slaveAddress">Address of the device to write to.</param>
         /// <param name="coilAddress">Address to write value to.</param>
         /// <param name="value">Value to write.</param>
-        void WriteSingleCoil(byte slaveAddress, ushort address, ushort value);
+        void WriteSingleCoil(byte slaveAddress, ushort address, bool value);
 
         /// <summary>
         /// Writes a sequence of coils.

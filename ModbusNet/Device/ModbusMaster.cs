@@ -50,11 +50,13 @@ namespace ModbusNet.Device
                 .StatusArray;
         }
 
-        public void WriteSingleCoil(byte slaveAddress, ushort address, ushort value)
+        public void WriteSingleCoil(byte slaveAddress, ushort address, bool value)
         {
             //Validate(ValidationType.WriteSingleCoil, value);
 
-            var pdu = WriteSingleCoilMessage.BuildRequestPDU(address, value);
+            ushort coilValue = value ? (ushort)0xFF00 : (ushort)0x0000;
+
+            var pdu = WriteSingleCoilMessage.BuildRequestPDU(address, coilValue);
 
             var request = _transport.BuildRequest(slaveAddress, pdu);
 
