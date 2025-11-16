@@ -46,9 +46,10 @@
             // 
             // buttonConnectionSettings
             // 
-            buttonConnectionSettings.Location = new Point(12, 12);
+            buttonConnectionSettings.Location = new Point(317, 143);
+            buttonConnectionSettings.Margin = new Padding(3, 4, 3, 4);
             buttonConnectionSettings.Name = "buttonConnectionSettings";
-            buttonConnectionSettings.Size = new Size(154, 52);
+            buttonConnectionSettings.Size = new Size(176, 69);
             buttonConnectionSettings.TabIndex = 0;
             buttonConnectionSettings.Text = "Connection Settings";
             buttonConnectionSettings.UseVisualStyleBackColor = true;
@@ -56,17 +57,19 @@
             // 
             // textBoxSlaveId
             // 
-            textBoxSlaveId.Location = new Point(12, 22);
+            textBoxSlaveId.Location = new Point(14, 29);
+            textBoxSlaveId.Margin = new Padding(3, 4, 3, 4);
             textBoxSlaveId.Name = "textBoxSlaveId";
-            textBoxSlaveId.Size = new Size(60, 23);
+            textBoxSlaveId.Size = new Size(52, 27);
             textBoxSlaveId.TabIndex = 1;
             textBoxSlaveId.Text = "1";
             // 
             // connectBtn
             // 
-            connectBtn.Location = new Point(78, 21);
+            connectBtn.Location = new Point(72, 28);
+            connectBtn.Margin = new Padding(3, 4, 3, 4);
             connectBtn.Name = "connectBtn";
-            connectBtn.Size = new Size(60, 24);
+            connectBtn.Size = new Size(86, 28);
             connectBtn.TabIndex = 2;
             connectBtn.Text = "Connect";
             connectBtn.UseVisualStyleBackColor = true;
@@ -77,9 +80,11 @@
             groupBox1.Controls.Add(labelConnectionStatus);
             groupBox1.Controls.Add(textBoxSlaveId);
             groupBox1.Controls.Add(connectBtn);
-            groupBox1.Location = new Point(12, 93);
+            groupBox1.Location = new Point(14, 124);
+            groupBox1.Margin = new Padding(3, 4, 3, 4);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(154, 74);
+            groupBox1.Padding = new Padding(3, 4, 3, 4);
+            groupBox1.Size = new Size(176, 99);
             groupBox1.TabIndex = 3;
             groupBox1.TabStop = false;
             groupBox1.Text = "Slave ID";
@@ -88,9 +93,9 @@
             // 
             labelConnectionStatus.AutoSize = true;
             labelConnectionStatus.Font = new Font("Segoe UI", 8F);
-            labelConnectionStatus.Location = new Point(10, 52);
+            labelConnectionStatus.Location = new Point(11, 69);
             labelConnectionStatus.Name = "labelConnectionStatus";
-            labelConnectionStatus.Size = new Size(88, 13);
+            labelConnectionStatus.Size = new Size(105, 19);
             labelConnectionStatus.TabIndex = 3;
             labelConnectionStatus.Text = "Not Connected.";
             // 
@@ -102,47 +107,54 @@
             groupBoxHoldingRegisters.Controls.Add(textBoxStartAddress);
             groupBoxHoldingRegisters.Controls.Add(buttonWrite);
             groupBoxHoldingRegisters.Controls.Add(buttonRead);
-            groupBoxHoldingRegisters.Location = new Point(12, 184);
+            groupBoxHoldingRegisters.Location = new Point(14, 245);
+            groupBoxHoldingRegisters.Margin = new Padding(3, 4, 3, 4);
             groupBoxHoldingRegisters.Name = "groupBoxHoldingRegisters";
-            groupBoxHoldingRegisters.Size = new Size(307, 222);
+            groupBoxHoldingRegisters.Padding = new Padding(3, 4, 3, 4);
+            groupBoxHoldingRegisters.Size = new Size(351, 296);
             groupBoxHoldingRegisters.TabIndex = 4;
             groupBoxHoldingRegisters.TabStop = false;
             groupBoxHoldingRegisters.Text = "Holding Registers";
             // 
             // richTextBoxResult
             // 
-            richTextBoxResult.Location = new Point(6, 82);
+            richTextBoxResult.Location = new Point(7, 109);
+            richTextBoxResult.Margin = new Padding(3, 4, 3, 4);
             richTextBoxResult.Name = "richTextBoxResult";
-            richTextBoxResult.Size = new Size(291, 140);
+            richTextBoxResult.Size = new Size(332, 185);
             richTextBoxResult.TabIndex = 4;
             richTextBoxResult.Text = "";
             // 
             // textBoxValue
             // 
-            textBoxValue.Location = new Point(6, 51);
+            textBoxValue.Location = new Point(7, 68);
+            textBoxValue.Margin = new Padding(3, 4, 3, 4);
             textBoxValue.Name = "textBoxValue";
-            textBoxValue.Size = new Size(100, 23);
+            textBoxValue.Size = new Size(114, 27);
             textBoxValue.TabIndex = 3;
             // 
             // textBoxRegisterNum
             // 
-            textBoxRegisterNum.Location = new Point(116, 22);
+            textBoxRegisterNum.Location = new Point(133, 29);
+            textBoxRegisterNum.Margin = new Padding(3, 4, 3, 4);
             textBoxRegisterNum.Name = "textBoxRegisterNum";
-            textBoxRegisterNum.Size = new Size(100, 23);
+            textBoxRegisterNum.Size = new Size(114, 27);
             textBoxRegisterNum.TabIndex = 2;
             // 
             // textBoxStartAddress
             // 
-            textBoxStartAddress.Location = new Point(6, 22);
+            textBoxStartAddress.Location = new Point(7, 29);
+            textBoxStartAddress.Margin = new Padding(3, 4, 3, 4);
             textBoxStartAddress.Name = "textBoxStartAddress";
-            textBoxStartAddress.Size = new Size(100, 23);
+            textBoxStartAddress.Size = new Size(114, 27);
             textBoxStartAddress.TabIndex = 1;
             // 
             // buttonWrite
             // 
-            buttonWrite.Location = new Point(222, 51);
+            buttonWrite.Location = new Point(254, 68);
+            buttonWrite.Margin = new Padding(3, 4, 3, 4);
             buttonWrite.Name = "buttonWrite";
-            buttonWrite.Size = new Size(75, 23);
+            buttonWrite.Size = new Size(86, 31);
             buttonWrite.TabIndex = 0;
             buttonWrite.Text = "Write";
             buttonWrite.UseVisualStyleBackColor = true;
@@ -150,9 +162,10 @@
             // 
             // buttonRead
             // 
-            buttonRead.Location = new Point(222, 21);
+            buttonRead.Location = new Point(254, 28);
+            buttonRead.Margin = new Padding(3, 4, 3, 4);
             buttonRead.Name = "buttonRead";
-            buttonRead.Size = new Size(75, 23);
+            buttonRead.Size = new Size(86, 31);
             buttonRead.TabIndex = 0;
             buttonRead.Text = "Read";
             buttonRead.UseVisualStyleBackColor = true;
@@ -160,12 +173,13 @@
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(914, 600);
             Controls.Add(groupBoxHoldingRegisters);
             Controls.Add(groupBox1);
             Controls.Add(buttonConnectionSettings);
+            Margin = new Padding(3, 4, 3, 4);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "MainForm";

@@ -47,16 +47,18 @@ namespace Modbus.Forms
 
         private void fillForm()
         {
-            comboConnectionType.DataSource = EnumExtensions.ToList<ConnectionType>();
-            comboConnectionType.SelectedValue = Settings.connectionType;
+            List<string> cnn = new List<string> { "Serial Port", "TCP/IP" };
+            comboConnectionType.Items.AddRange(cnn.ToArray());
+            comboConnectionType.SelectedItem = (Settings.ConnectionType.ToString() == "ASCII") ||
+                                                (Settings.ConnectionType.ToString() == "RTU") ? "Serial Port" : "TCP/IP";
 
 
             comboPortName.DataSource = EnumExtensions.ToList<PortName>();
-            comboPortName.SelectedValue = Settings.portName;
+            comboPortName.SelectedValue = Settings.PortName;
 
             comboBaudRate.Items.Clear();
             comboBaudRate.Items.AddRange(baudRates);
-            string desiredText = BaudRateIntToString(Settings.baudRate);
+            string desiredText = BaudRateIntToString(Settings.BaudRate);
             if (comboBaudRate.Items.Contains(desiredText))
             {
                 checkBoxCustomBaud.Checked = false;
@@ -69,7 +71,7 @@ namespace Modbus.Forms
                 checkBoxCustomBaud.Checked = true;
                 comboBaudRate.Enabled = false;
                 textBoxCustomBaud.Enabled = true;
-                textBoxCustomBaud.Text = Settings.baudRate > 0 ? Settings.baudRate.ToString() : "";
+                textBoxCustomBaud.Text = Settings.BaudRate > 0 ? Settings.BaudRate.ToString() : "";
             }
 
             comboParity.DataSource = Enum.GetValues(typeof(ParityType))
@@ -77,11 +79,11 @@ namespace Modbus.Forms
                 .Select(e => new { Value = e, Text = e.ToString() + " Parity" })
                 .ToList();
 
-            comboParity.SelectedValue = Settings.parity;
+            comboParity.SelectedValue = Settings.Parity;
 
 
             comboDataBits.DataSource = EnumExtensions.ToList<DataBits>();
-            comboDataBits.SelectedValue = Settings.dataBits;
+            comboDataBits.SelectedValue = Settings.DataBits;
 
 
             comboStopBits.DataSource = Enum.GetValues(typeof(StopBitsType))
@@ -89,27 +91,32 @@ namespace Modbus.Forms
                 .Select(e => new { Value = e, Text = e.ToString() + " Stop Bit" })
                 .ToList(); comboStopBits.DisplayMember = "Text";
 
-            comboStopBits.SelectedValue = Settings.stopBits;
+            comboStopBits.SelectedValue = Settings.StopBits;
 
-            respTBox.Text = Settings.responseTimeout.ToString();
+            respTBox.Text = Settings.Timeout.ToString();
 
-            delayTBox.Text = Settings.delay.ToString();
+            delayTBox.Text = Settings.RetryDelayMs.ToString();
 
-            radioButtonRTU.Checked = Settings.isRTU;
+            radioButtonRTU.Checked = Settings.ConnectionType.ToString() == "RTU";
 
-            radioButtonASCII.Checked = !Settings.isRTU;
+            radioButtonASCII.Checked = Settings.ConnectionType.ToString() == "ASCII";
         }
 
         private void okBtn_Click(object sender, EventArgs e)
         {
-            Settings.connectionType = (ConnectionType)comboConnectionType.SelectedValue;
-            Settings.portName = (PortName)comboPortName.SelectedValue;
-            Settings.parity = (Parity)comboParity.SelectedValue;
-            Settings.dataBits = (DataBits)comboDataBits.SelectedValue;
-            Settings.stopBits = (StopBits)comboStopBits.SelectedValue;
-            Settings.responseTimeout = Int32.Parse(respTBox.Text);
-            Settings.delay = Int32.Parse(delayTBox.Text);
-            Settings.isRTU = radioButtonRTU.Checked;
+            Settings.ConnectionType = comboConnectionType.SelectedItem.ToString() switch
+            {
+                "Serial Port" when radioButtonASCII.Checked => ConnectionType.ASCII,
+                "Serial Port" when radioButtonRTU.Checked => ConnectionType.RTU,
+                "TCP/IP" => ConnectionType.TCP,
+                _ => Settings.ConnectionType
+            };
+            Settings.PortName = (PortName)comboPortName.SelectedValue;
+            Settings.Parity = (Parity)comboParity.SelectedValue;
+            Settings.DataBits = (DataBits)comboDataBits.SelectedValue;
+            Settings.StopBits = (StopBits)comboStopBits.SelectedValue;
+            Settings.Timeout = Int32.Parse(respTBox.Text);
+            Settings.RetryDelayMs = Int32.Parse(delayTBox.Text);
 
             int baudValue = 0;
             if (checkBoxCustomBaud.Checked)
@@ -131,7 +138,7 @@ namespace Modbus.Forms
                         baudValue = BaudRateStringToInt(comboBaudRate.Items[0].ToString());
                 }
             }
-            Settings.baudRate = baudValue;
+            Settings.BaudRate = baudValue;
 
 
             DialogResult = DialogResult.OK;

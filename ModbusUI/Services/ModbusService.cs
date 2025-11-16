@@ -1,4 +1,5 @@
-﻿using ModbusNet.Device;
+﻿using ModbusNet;
+using ModbusNet.Device;
 
 namespace ModbusUI.Services
 {
@@ -18,20 +19,21 @@ namespace ModbusUI.Services
         /// </summary>
         /// <param name="settings">Connection parameters</param>
         /// <returns>True if connection successful</returns>
-        //public bool Connect(ConnectionSettings settings)
-        //{
-        //    try
-        //    {
+        public bool Connect(ModbusSettings settings)
+        {
+            try
+            {
+                _master = ModbusFactory.CreateAsciiMaster(settings);
 
-        //        _isConnected = true;
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _isConnected = false;
-        //        return false;
-        //    }
-        //}
+                _isConnected = true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _isConnected = false;
+                return false;
+            }
+        }
 
 
         /// <summary>
@@ -50,11 +52,11 @@ namespace ModbusUI.Services
         /// <param name="startAddress">Starting register address</param>
         /// <param name="numberOfPoints">Number of registers to read</param>
         /// <returns>Array of register values</returns>
-        //public ushort[] ReadHoldingRegisters(byte slaveId, ushort startAddress, ushort numberOfPoints)
-        //{
-        //    ValidateConnection();
-        //    //return _master.ReadHoldingRegisters(slaveId, startAddress, numberOfPoints);
-        //}
+        public ushort[] ReadHoldingRegisters(byte slaveId, ushort startAddress, ushort numberOfPoints)
+        {
+            ValidateConnection();
+            return _master.ReadMultipleHoldingRegisters(slaveId, startAddress, numberOfPoints);
+        }
 
         /// <summary>
         /// Writes single holding register (Function Code 06)
@@ -65,7 +67,7 @@ namespace ModbusUI.Services
         public void WriteSingleRegister(byte slaveId, ushort registerAddress, ushort value)
         {
             ValidateConnection();
-            //_master.WriteSingleRegister(slaveId, registerAddress, value);
+            _master.WriteSingleHoldingRegister(slaveId, registerAddress, value);
         }
 
         /// <summary>
@@ -77,7 +79,7 @@ namespace ModbusUI.Services
         public void WriteMultipleRegisters(byte slaveId, ushort startAddress, ushort[] data)
         {
             ValidateConnection();
-            //_master.WriteMultipleRegisters(slaveId, startAddress, data);
+            _master.WriteMultipleHoldingRegisters(slaveId, startAddress, data);
         }
 
         #endregion
@@ -244,31 +246,18 @@ namespace ModbusUI.Services
 
         #endregion
 
-        #region IDisposable Implementation
+        #region Dispose
 
         private bool _disposed = false;
 
-        protected virtual void Dispose(bool disposing)
+ 
+        public void Dispose()
         {
             if (!_disposed)
             {
-                if (disposing)
-                {
-                    
-                }
+                _master.Dispose();
                 _disposed = true;
             }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~ModbusService()
-        {
-            Dispose(false);
         }
 
         #endregion
