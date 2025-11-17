@@ -9,7 +9,7 @@ namespace ModbusNet.Messages
         {
             var pdu = new byte[1];
 
-            pdu[0] = (byte)ModbusPublicFunctionCode.Read_Exception_Status;
+            pdu[0] = (byte)ModbusFunctionCode.Read_Exception_Status;
 
             return pdu;
         }

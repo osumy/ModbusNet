@@ -8,7 +8,7 @@ namespace ModbusNet.Messages
         {
             var pdu = new byte[5];
 
-            pdu[0] = (byte)ModbusPublicFunctionCode.Read_Multiple_Holding_Registers;
+            pdu[0] = (byte)ModbusFunctionCode.Read_Multiple_Holding_Registers;
             pdu[1] = (byte)(startAddress >> 8); // High byte of start address
             pdu[2] = (byte)(startAddress & 0xFF); // Low byte of start address
             pdu[3] = (byte)(numberOfPoints >> 8); // High byte of count

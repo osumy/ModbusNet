@@ -1,0 +1,549 @@
+﻿using ModbusNet;
+using ModbusUI.Services;
+
+namespace Modbus.Forms
+{
+    public partial class MainForm : Form
+    {
+        private ModbusSettings _settings;
+        private ModbusService _modbusService;
+        private byte _slaveId;
+
+        public MainForm()
+        {
+            InitializeComponent();
+
+            _settings = ModbusSettings.Default;
+            _modbusService = new ModbusService();
+
+            // Initialize your ComboBox items
+            comboBoxFC.Items.AddRange(new object[] {
+                new { Text = "Read Coils (0x01)", Value = 1 },
+                new { Text = "Read Discrete Inputs (0x02)", Value = 2 },
+                new { Text = "Read Holding Registers (0x03)", Value = 3 },
+                new { Text = "Read Input Registers (0x04)", Value = 4 },
+                new { Text = "Write Single Coil (0x05)", Value = 5 },
+                new { Text = "Write Single Register (0x06)", Value = 6 },
+                new { Text = "Write Multiple Coils (0x0F)", Value = 15 },
+                new { Text = "Write Multiple Registers (0x10)", Value = 16 }
+            });
+
+            // Set display member and value member
+            comboBoxFC.DisplayMember = "Text";
+            comboBoxFC.ValueMember = "Value";
+
+            // Set default selection
+            comboBoxFC.SelectedIndex = 2;
+        }
+
+        private void buttonConnectionSettings_Click(object sender, EventArgs e)
+        {
+            SettingsForm settingsForm = new SettingsForm(_settings);
+            settingsForm.ShowDialog();
+
+            if (settingsForm.DialogResult == DialogResult.OK)
+            {
+                _settings = settingsForm.Settings;
+            }
+        }
+
+        private void connectBtn_Click(object sender, EventArgs e)
+        {
+            int id = 0;
+            string txt = textBoxSlaveId.Text?.Trim();
+            if (!int.TryParse(txt, out id) || id <= 0)
+            {
+                MessageBox.Show("Please enter a valid numeric slave id.", "Invalid Slave ID", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            else
+            {
+                try
+                {
+                    _modbusService.Connect(_settings);
+
+                    if (_modbusService.TestConnection((byte)id) == false)
+                    {
+                        MessageBox.Show("Connection Test Failed!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        labelConnectionStatus.Text = "Not Connected.";
+                        labelConnectionStatus.ForeColor = SystemColors.ControlText;
+                        textBoxSlaveId.Enabled = true;
+                        return;
+                    }
+
+                    labelConnectionStatus.Text = "Connected!";
+                    labelConnectionStatus.ForeColor = Color.Green;
+                    textBoxSlaveId.Enabled = false;
+                    _slaveId = Byte.Parse(txt);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Connection Error: {ex.Message}", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    labelConnectionStatus.Text = "Not Connected.";
+                    labelConnectionStatus.ForeColor = SystemColors.ControlText;
+                    textBoxSlaveId.Enabled = true;
+                    return;
+                }
+            }
+        }
+
+
+        private void comboBoxFC_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBoxFC.SelectedItem == null) return;
+
+            // Get the selected function code
+            var selectedItem = comboBoxFC.SelectedItem;
+            var functionCode = (int)selectedItem.GetType().GetProperty("Value").GetValue(selectedItem);
+
+            UpdateUIForFunctionCode(functionCode);
+        }
+
+        private void UpdateUIForFunctionCode(int functionCode)
+        {
+            // Hide all optional controls first
+            HideAllOptionalControls();
+
+            switch (functionCode)
+            {
+                case 1: // Read Coils
+                case 2: // Read Discrete Inputs
+                    ShowReadDiscreteControls();
+                    break;
+
+                case 3: // Read Holding Registers
+                case 4: // Read Input Registers
+                    ShowReadRegisterControls();
+                    break;
+
+                case 5: // Write Single Coil
+                    ShowWriteSingleCoilControls();
+                    break;
+
+                case 6: // Write Single Register
+                    ShowWriteSingleRegisterControls();
+                    break;
+
+                case 15: // Write Multiple Coils
+                    ShowWriteMultipleCoilsControls();
+                    break;
+
+                case 16: // Write Multiple Registers
+                    ShowWriteMultipleRegistersControls();
+                    break;
+            }
+
+            UpdateButtonText(functionCode);
+        }
+
+        private void HideAllOptionalControls()
+        {
+            // Hide controls that are not common to all functions
+            labelCount.Visible = false;
+            numericUpDownCount.Visible = false;
+            checkBoxCoilValue.Visible = false;
+            textBoxCount.Visible = false;
+
+            dataGridViewValues.Visible = false;
+            //labelData.Visible = false;
+            //textBoxData.Visible = false;
+        }
+
+        private void ShowReadDiscreteControls()
+        {
+            // For reading coils/discrete inputs
+            labelStartAddress.Text = "Start Address:";
+            labelCount.Text = "Quantity:";
+            labelCount.Visible = true;
+            numericUpDownCount.Visible = true;
+            numericUpDownCount.Minimum = 1;
+            numericUpDownCount.Maximum = 2000; // Modbus limit for coils
+        }
+
+        private void ShowReadRegisterControls()
+        {
+            // For reading holding/input registers
+            labelStartAddress.Text = "Start Address:";
+            labelCount.Text = "Quantity:";
+            labelCount.Visible = true;
+            numericUpDownCount.Visible = true;
+            numericUpDownCount.Minimum = 1;
+            numericUpDownCount.Maximum = 125; // Modbus limit for registers
+        }
+
+        private void ShowWriteSingleCoilControls()
+        {
+            labelStartAddress.Text = "Coil Address:";
+            labelCount.Text = "Coil Value:";
+            labelCount.Visible = true;
+
+            // Use checkbox for coil value instead of textbox
+            checkBoxCoilValue.Visible = true;
+        }
+
+        private void ShowWriteSingleRegisterControls()
+        {
+            labelStartAddress.Text = "Address:";
+            labelCount.Text = "Value:";
+            labelCount.Visible = true;
+            textBoxCount.Visible = true;
+            textBoxCount.Text = "0";
+        }
+
+        private void ShowWriteMultipleCoilsControls()
+        {
+            labelStartAddress.Text = "Start Address:";
+            labelCount.Text = "Quantity:";
+            labelCount.Visible = true;
+            numericUpDownCount.Visible = true;
+
+            // Show data grid for multiple coil values
+            dataGridViewValues.Visible = true;
+            SetupCoilsDataGrid();
+        }
+
+        private void ShowWriteMultipleRegistersControls()
+        {
+            labelStartAddress.Text = "Start Address:";
+            labelCount.Text = "Quantity:";
+            labelCount.Visible = true;
+            numericUpDownCount.Visible = true;
+
+            // Show data grid or text box for multiple register values
+            dataGridViewValues.Visible = true;
+            SetupRegistersDataGrid();
+        }
+
+        private void UpdateButtonText(int functionCode)
+        {
+            string action = functionCode <= 4 ? "Read" : "Write";
+            buttonExecute.Text = $"{action} Data";
+        }
+
+        private void SetupCoilsDataGrid()
+        {
+            dataGridViewValues.Rows.Clear();
+            dataGridViewValues.Columns.Clear();
+
+            dataGridViewValues.Columns.Add("Address", "Address");
+            dataGridViewValues.Columns.Add("Value", "Value (1/0)");
+            dataGridViewValues.Columns.Add("Hex", "Hex");
+
+            // Get start address
+            ushort startAddress = 0;
+            if (!ushort.TryParse(textBoxStartAddress.Text.Trim(), out startAddress))
+            {
+                startAddress = 0;
+            }
+
+            // Add rows based on quantity with proper addresses
+            int quantity = (int)numericUpDownCount.Value;
+            for (int i = 0; i < quantity; i++)
+            {
+                dataGridViewValues.Rows.Add(startAddress + i, "0");
+            }
+        }
+
+        private void SetupRegistersDataGrid()
+        {
+            dataGridViewValues.Rows.Clear();
+            dataGridViewValues.Columns.Clear();
+
+            dataGridViewValues.Columns.Add("Address", "Address");
+            dataGridViewValues.Columns.Add("Value", "Value (0-65535)");
+            dataGridViewValues.Columns.Add("Hex", "Hex");
+
+            // Get start address
+            ushort startAddress = 0;
+            if (!ushort.TryParse(textBoxStartAddress.Text.Trim(), out startAddress))
+            {
+                startAddress = 0;
+            }
+
+            // Add rows based on quantity with proper addresses
+            int quantity = (int)numericUpDownCount.Value;
+            for (int i = 0; i < quantity; i++)
+            {
+                dataGridViewValues.Rows.Add(startAddress + i, "0");
+            }
+        }
+
+        private void buttonExecute_Click(object sender, EventArgs e)
+        {
+            if (comboBoxFC.SelectedItem == null) return;
+
+            var selectedItem = comboBoxFC.SelectedItem;
+            var functionCode = (int)selectedItem.GetType().GetProperty("Value").GetValue(selectedItem);
+
+            try
+            {
+
+                // Validate connection first
+                if (!_modbusService.IsConnected)
+                {
+                    MessageBox.Show("Not connected to Modbus device. Please connect first.",
+                                   "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Validate address input
+                if (!ushort.TryParse(textBoxStartAddress.Text.Trim(), out ushort address))
+                {
+                    MessageBox.Show("Please enter a valid start address (0-65535)",
+                                   "Invalid Address", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                switch (functionCode)
+                {
+                    case 1:
+                        ReadCoils();
+                        break;
+                    case 2:
+                        ReadDiscreteInputs();
+                        break;
+                    case 3:
+                        ReadHoldingRegisters();
+                        break;
+                    case 4:
+                        ReadInputRegisters();
+                        break;
+                    case 5:
+                        WriteSingleCoil();
+                        break;
+                    case 6:
+                        WriteSingleRegister();
+                        break;
+                    case 15:
+                        WriteMultipleCoils();
+                        break;
+                    case 16:
+                        WriteMultipleRegisters();
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Modbus Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ReadCoils()
+        {
+            ushort startAddress = ushort.Parse(textBoxStartAddress.Text.Trim());
+            ushort quantity = (ushort)numericUpDownCount.Value;
+            bool[] coilValues = _modbusService.ReadCoils(_slaveId, startAddress, quantity);
+
+            // Display results in data grid
+            dataGridViewValues.Rows.Clear();
+            dataGridViewValues.Columns.Clear();
+            dataGridViewValues.Columns.Add("Address", "Address");
+            dataGridViewValues.Columns.Add("Value", "Value");
+            dataGridViewValues.Columns.Add("Hex", "Hex");
+            dataGridViewValues.Visible = true;
+            for (int i = 0; i < coilValues.Length; i++)
+            {
+                dataGridViewValues.Rows.Add(startAddress + i, coilValues[i]);
+            }
+        }
+
+        private void ReadDiscreteInputs()
+        {
+            ushort startAddress = ushort.Parse(textBoxStartAddress.Text.Trim());
+            ushort quantity = (ushort)numericUpDownCount.Value;
+            bool[] inputValues = _modbusService.ReadDiscreteInputs(_slaveId, startAddress, quantity);
+
+            // Display results in data grid
+            dataGridViewValues.Rows.Clear();
+            dataGridViewValues.Columns.Clear();
+            dataGridViewValues.Columns.Add("Address", "Address");
+            dataGridViewValues.Columns.Add("Value", "Value");
+            dataGridViewValues.Columns.Add("Hex", "Hex");
+            dataGridViewValues.Visible = true;
+            for (int i = 0; i < inputValues.Length; i++)
+            {
+                dataGridViewValues.Rows.Add(startAddress + i, inputValues[i]);
+            }
+        }
+
+        private void ReadHoldingRegisters()
+        {
+            ushort startAddress = ushort.Parse(textBoxStartAddress.Text.Trim());
+            ushort quantity = (ushort)numericUpDownCount.Value;
+            ushort[] registerValues = _modbusService.ReadHoldingRegisters(_slaveId, startAddress, quantity);
+
+            // Display results in data grid
+            dataGridViewValues.Rows.Clear();
+            dataGridViewValues.Columns.Clear();
+            dataGridViewValues.Columns.Add("Address", "Address");
+            dataGridViewValues.Columns.Add("Value", "Value");
+            dataGridViewValues.Columns.Add("Hex", "Hex");
+            dataGridViewValues.Visible = true;
+
+            for (int i = 0; i < registerValues.Length; i++)
+            {
+                dataGridViewValues.Rows.Add(startAddress + i, registerValues[i], $"0x{registerValues[i]:X4}");
+            }
+        }
+
+        private void ReadInputRegisters()
+        {
+            ushort startAddress = ushort.Parse(textBoxStartAddress.Text.Trim());
+            ushort quantity = (ushort)numericUpDownCount.Value;
+            ushort[] registerValues = _modbusService.ReadInputRegisters(_slaveId, startAddress, quantity);
+
+            // Display results in data grid
+            dataGridViewValues.Rows.Clear();
+            dataGridViewValues.Columns.Clear();
+            dataGridViewValues.Columns.Add("Address", "Address");
+            dataGridViewValues.Columns.Add("Value", "Value");
+            dataGridViewValues.Columns.Add("Hex", "Hex");
+            dataGridViewValues.Visible = true;
+
+            for (int i = 0; i < registerValues.Length; i++)
+            {
+                dataGridViewValues.Rows.Add(startAddress + i, registerValues[i], $"0x{registerValues[i]:X4}");
+            }
+        }
+
+        private void WriteSingleCoil()
+        {
+            ushort coilAddress = ushort.Parse(textBoxStartAddress.Text.Trim());
+            bool coilValue = checkBoxCoilValue.Checked;
+
+            _modbusService.WriteSingleCoil(_slaveId, coilAddress, coilValue);
+
+            // Show success message
+            MessageBox.Show($"Coil at address {coilAddress} successfully set to {coilValue}",
+                           "Write Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void WriteSingleRegister()
+        {
+            ushort registerAddress = ushort.Parse(textBoxStartAddress.Text.Trim());
+            ushort registerValue;
+
+            if (!ushort.TryParse(textBoxCount.Text.Trim(), out registerValue))
+            {
+                MessageBox.Show("Please enter a valid register value (0-65535)", "Invalid Value",
+                               MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            _modbusService.WriteSingleRegister(_slaveId, registerAddress, registerValue);
+
+            // Show success message
+            MessageBox.Show($"Register at address {registerAddress} successfully set to {registerValue} (0x{registerValue:X4})",
+                           "Write Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void WriteMultipleCoils()
+        {
+            ushort startAddress = ushort.Parse(textBoxStartAddress.Text.Trim());
+            ushort quantity = (ushort)numericUpDownCount.Value;
+
+            // Read coil values from data grid
+            bool[] coilValues = new bool[quantity];
+            for (int i = 0; i < quantity; i++)
+            {
+                if (dataGridViewValues.Rows[i].Cells[1].Value != null)
+                {
+                    string valueStr = dataGridViewValues.Rows[i].Cells[1].Value.ToString();
+                    coilValues[i] = valueStr.Equals("True", StringComparison.OrdinalIgnoreCase) ||
+                                   valueStr == "1";
+                }
+            }
+
+            _modbusService.WriteMultipleCoils(_slaveId, startAddress, coilValues);
+
+            // Show success message
+            MessageBox.Show($"Successfully wrote {quantity} coils starting at address {startAddress}",
+                           "Write Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void WriteMultipleRegisters()
+        {
+            ushort startAddress = ushort.Parse(textBoxStartAddress.Text.Trim());
+            ushort quantity = (ushort)numericUpDownCount.Value;
+
+            // Read register values from data grid
+            ushort[] registerValues = new ushort[quantity];
+            for (int i = 0; i < quantity; i++)
+            {
+                if (dataGridViewValues.Rows[i].Cells[1].Value != null &&
+                    ushort.TryParse(dataGridViewValues.Rows[i].Cells[1].Value.ToString(), out ushort value))
+                {
+                    registerValues[i] = value;
+                }
+                else
+                {
+                    MessageBox.Show($"Invalid register value at address {startAddress + i}", "Invalid Value",
+                                   MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
+            _modbusService.WriteMultipleRegisters(_slaveId, startAddress, registerValues);
+
+            // Show success message
+            MessageBox.Show($"Successfully wrote {quantity} registers starting at address {startAddress}",
+                           "Write Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void RefreshDataGrid()
+        {
+            if (!dataGridViewValues.Visible) return;
+
+            if (comboBoxFC.SelectedItem == null) return;
+
+            var selectedItem = comboBoxFC.SelectedItem;
+            var functionCode = (int)selectedItem.GetType().GetProperty("Value").GetValue(selectedItem);
+
+            // Only for write multiple operations
+            if (functionCode != 15 && functionCode != 16) return;
+
+            // Get current parameters
+            ushort startAddress = 0;
+            if (!ushort.TryParse(textBoxStartAddress.Text.Trim(), out startAddress))
+            {
+                startAddress = 0;
+            }
+
+            int quantity = (int)numericUpDownCount.Value;
+
+            // Clear and setup grid
+            dataGridViewValues.Rows.Clear();
+            dataGridViewValues.Columns.Clear();
+
+            if (functionCode == 15) // Write Multiple Coils
+            {
+                dataGridViewValues.Columns.Add("Address", "Address");
+                dataGridViewValues.Columns.Add("Value", "Value (1/0)");
+
+                for (int i = 0; i < quantity; i++)
+                {
+                    dataGridViewValues.Rows.Add(startAddress + i, "0");
+                }
+            }
+            else // Write Multiple Registers
+            {
+                dataGridViewValues.Columns.Add("Address", "Address");
+                dataGridViewValues.Columns.Add("Value", "Value (0-65535)");
+
+                for (int i = 0; i < quantity; i++)
+                {
+                    dataGridViewValues.Rows.Add(startAddress + i, "0");
+                }
+            }
+        }
+        private void textBoxStartAddress_TextChanged(object sender, EventArgs e)
+        {
+            RefreshDataGrid();
+        }
+
+        private void numericUpDownCount_ValueChanged(object sender, EventArgs e)
+        {
+            RefreshDataGrid();
+        }
+    }
+}

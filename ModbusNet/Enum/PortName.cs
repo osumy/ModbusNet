@@ -1,13 +1,17 @@
 ﻿using System.ComponentModel;
 
-namespace Modbus.Models.Enums
+namespace ModbusNet.Enum
 {
     public enum PortName
     {
         [Description("Communications Port (COM1)")]
         COM1,
 
+        COM2,
+
         [Description("USB Serial Device (COM3)")]
-        COM3
+        COM3,
+
+        COM4
     }
 }

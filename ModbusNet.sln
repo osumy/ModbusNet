@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModbusNet.Tests", "ModbusNe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModbusNet.Samples", "ModbusNet.Samples\ModbusNet.Samples.csproj", "{4A3510DC-9083-44A9-9E15-50E807EB80E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModbusUI", "ModbusUI\ModbusUI.csproj", "{134CBBC5-F6F4-4796-BE9B-F5A52B396543}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4A3510DC-9083-44A9-9E15-50E807EB80E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A3510DC-9083-44A9-9E15-50E807EB80E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A3510DC-9083-44A9-9E15-50E807EB80E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{134CBBC5-F6F4-4796-BE9B-F5A52B396543}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{134CBBC5-F6F4-4796-BE9B-F5A52B396543}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{134CBBC5-F6F4-4796-BE9B-F5A52B396543}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{134CBBC5-F6F4-4796-BE9B-F5A52B396543}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,7 +9,7 @@ namespace ModbusNet.Messages
         {
             var pdu = new byte[7];
 
-            pdu[0] = (byte)ModbusPublicFunctionCode.Mask_Write_Register;
+            pdu[0] = (byte)ModbusFunctionCode.Mask_Write_Register;
             pdu[1] = (byte)(address >> 8); // High byte of reference address
             pdu[2] = (byte)(address & 0xFF); // Low byte of reference address
             pdu[3] = (byte)(andMask >> 8); // High byte of AND mask

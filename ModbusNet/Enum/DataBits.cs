@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Modbus.Models.Enums
+namespace ModbusNet.Enum
 {
     public enum DataBits
     {

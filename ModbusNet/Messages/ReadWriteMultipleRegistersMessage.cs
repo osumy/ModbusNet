@@ -12,7 +12,7 @@ namespace ModbusNet.Messages
             int pduLength = 10 + writeDataByteCount; // Function code (1) + read start (2) + read count (2) + write start (2) + write count (2) + byte count (1) + write data bytes
             var pdu = new byte[pduLength];
 
-            pdu[0] = (byte)ModbusPublicFunctionCode.ReadWrite_Multiple_Registers;
+            pdu[0] = (byte)ModbusFunctionCode.ReadWrite_Multiple_Registers;
             pdu[1] = (byte)(readStartAddress >> 8); // High byte of read starting address
             pdu[2] = (byte)(readStartAddress & 0xFF); // Low byte of read starting address
             pdu[3] = (byte)(numberOfPointsToRead >> 8); // High byte of number of registers to read

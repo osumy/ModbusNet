@@ -8,7 +8,7 @@ namespace ModbusNet.Messages
         {
             var pdu = new byte[1];
 
-            pdu[0] = (byte)ModbusPublicFunctionCode.Report_Server_ID;
+            pdu[0] = (byte)ModbusFunctionCode.Report_Server_ID;
 
             return pdu;
         }

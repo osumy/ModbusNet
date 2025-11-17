@@ -1,18 +1,17 @@
 ﻿using ModbusNet.Device.Validation;
 using ModbusNet.Messages;
 using ModbusNet.Transport;
-using ModbusNet.Utils;
 
 namespace ModbusNet.Device
 {
     public class ModbusMaster : IModbusMaster
     {
-        private readonly IModbusTransport _transport;
+        private readonly ModbusTransportBase _transport;
         private readonly ModbusSettings _settings;
 
         private bool _disposed = false;
 
-        public ModbusMaster(IModbusTransport transport, ModbusSettings settings)
+        public ModbusMaster(ModbusTransportBase transport, ModbusSettings settings)
         {
             _transport = transport;
             _settings = settings;
@@ -51,11 +50,13 @@ namespace ModbusNet.Device
                 .StatusArray;
         }
 
-        public void WriteSingleCoil(byte slaveAddress, ushort address, ushort value)
+        public void WriteSingleCoil(byte slaveAddress, ushort address, bool value)
         {
             //Validate(ValidationType.WriteSingleCoil, value);
 
-            var pdu = WriteSingleCoilMessage.BuildRequestPDU(address, value);
+            ushort coilValue = value ? (ushort)0xFF00 : (ushort)0x0000;
+
+            var pdu = WriteSingleCoilMessage.BuildRequestPDU(address, coilValue);
 
             var request = _transport.BuildRequest(slaveAddress, pdu);
 
