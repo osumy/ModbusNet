@@ -43,8 +43,8 @@ namespace ModbusNet
         public string AsciiEndDelimiter { get; set; } = "\r\n";
 
 
-        public int RtuInterCharTimeoutMs { get; set; } = 2;
-        public int RtuInterFrameTimeoutMs { get; set; } = 2;
+        public int RtuInterCharTimeMs { get; set; } = 2;
+        public int RtuInterFrameTimeMs { get; set; } = 2;
 
         #endregion
     }
