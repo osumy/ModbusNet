@@ -7,7 +7,11 @@ namespace ModbusNet.Enum
         [Description("Communications Port (COM1)")]
         COM1,
 
+        COM2,
+
         [Description("USB Serial Device (COM3)")]
-        COM3
+        COM3,
+
+        COM4
     }
 }
