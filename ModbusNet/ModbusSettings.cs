@@ -29,7 +29,7 @@ namespace ModbusNet
         public int ReadTimeout { get; set; } = 2000;
         public int WriteTimeout { get; set; } = 2000;
 
-        public PortName PortName { get; set; } = PortName.COM3;
+        public PortName PortName { get; set; } = PortName.COM4;
         public int BaudRate { get; set; } = 9600;
         public Parity Parity { get; set; } = Parity.Even;
         public DataBits DataBits { get; set; } = DataBits.db7;
@@ -44,7 +44,7 @@ namespace ModbusNet
 
 
         public int RtuInterCharTimeoutMs { get; set; } = 2;
-        public int RtuInterFrameTimeoutMs { get; set; } = 5;
+        public int RtuInterFrameTimeoutMs { get; set; } = 2;
 
         #endregion
     }

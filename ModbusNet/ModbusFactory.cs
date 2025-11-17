@@ -1,4 +1,5 @@
 ﻿using ModbusNet.Device;
+using ModbusNet.Enum;
 using ModbusNet.Transport;
 using System.IO.Ports;
 
@@ -22,6 +23,11 @@ namespace ModbusNet
 
         private static SerialPort CreateSerialPort(ModbusSettings modbusSettings)
         {
+            if (modbusSettings.ConnectionType == ConnectionType.RTU)
+            {
+                
+            }
+
             return new SerialPort(
                 portName: modbusSettings.PortName.ToString(),
                 baudRate: modbusSettings.BaudRate,
