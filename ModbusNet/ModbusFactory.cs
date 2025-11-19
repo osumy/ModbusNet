@@ -21,6 +21,12 @@ namespace ModbusNet
             return new ModbusMaster(transport, modbusSettings);
         }
 
+        public static ModbusMaster CreateTcpMaster(ModbusSettings modbusSettings)
+        {
+            var transport = new TcpTransport(modbusSettings);
+            return new ModbusMaster(transport, modbusSettings);
+        }
+
         private static SerialPort CreateSerialPort(ModbusSettings modbusSettings)
         {
             if (modbusSettings.ConnectionType == ConnectionType.RTU
