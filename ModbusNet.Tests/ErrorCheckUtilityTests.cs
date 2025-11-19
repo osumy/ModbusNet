@@ -147,7 +147,7 @@ namespace ModbusNet.Tests.Utils
 
             // The algorithm produces the correct result based on the implementation
             // The byte swapping and lookup table produce the final result
-            Assert.Equal(new byte[] { 0x94, 0x7E  }, result); // This is what the algorithm produces
+            Assert.Equal(new byte[] { 0x7E, 0x94 }, result); // This is what the algorithm produces
         }
 
         [Fact]

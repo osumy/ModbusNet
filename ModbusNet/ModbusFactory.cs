@@ -23,9 +23,11 @@ namespace ModbusNet
 
         private static SerialPort CreateSerialPort(ModbusSettings modbusSettings)
         {
-            if (modbusSettings.ConnectionType == ConnectionType.RTU)
+            if (modbusSettings.ConnectionType == ConnectionType.RTU
+                && modbusSettings.BaudRate < 19200)
             {
-                
+                modbusSettings.RtuInterFrameTimeMs = (int)Math.Ceiling((42.0 / modbusSettings.BaudRate) * 1000);
+                modbusSettings.RtuInterCharTimeMs = (int)Math.Ceiling((18.0 / modbusSettings.BaudRate) * 1000);
             }
 
             return new SerialPort(
