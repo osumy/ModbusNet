@@ -85,8 +85,8 @@
             foreach (byte b in data) 
                 crc = (ushort)((crc >> 8) ^ _crcTable![(crc ^ b) & 0xFF]);
 
-            // Swap bytes (Modbus sends low byte first)
-            crc = (ushort)(((crc & 0xFF) << 8) | ((crc >> 8) & 0xFF));
+            //// Swap bytes (Modbus sends low byte first)
+            //crc = (ushort)(((crc & 0xFF) << 8) | ((crc >> 8) & 0xFF));
 
             return BitConverter.GetBytes(crc);
         }

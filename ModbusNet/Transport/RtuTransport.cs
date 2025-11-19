@@ -1,5 +1,6 @@
 ﻿using ModbusNet.Messages;
 using ModbusNet.Utils;
+using System.Diagnostics;
 using System.IO.Ports;
 
 namespace ModbusNet.Transport
@@ -31,6 +32,18 @@ namespace ModbusNet.Transport
             {
                 throw new InvalidOperationException("Serial port is not connected.");
             }
+
+            // DEBUG: Log the exact bytes being sent
+            Debug.WriteLine($"Sending: {BitConverter.ToString(request)}");
+            Debug.WriteLine($"Frame breakdown:");
+            Debug.WriteLine($"  Slave: {request[0]:X2}");
+            Debug.WriteLine($"  Func:  {request[1]:X2}");
+            Debug.WriteLine($"  Data:  {BitConverter.ToString(request, 2, request.Length - 4)}");
+            Debug.WriteLine($"  CRC:   {request[request.Length - 2]:X2} {request[request.Length - 1]:X2}");
+
+            // Verify CRC calculation
+            var calculatedCrc = ErrorCheckUtility.ComputeCrc(request.AsSpan(0, request.Length - 2));
+            Debug.WriteLine($"Calculated CRC: {calculatedCrc[0]:X2} {calculatedCrc[1]:X2}");
 
 
             for (int attempt = 0; attempt < _settings.RetryCount; attempt++)
