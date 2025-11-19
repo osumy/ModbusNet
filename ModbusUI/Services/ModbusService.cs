@@ -1,5 +1,6 @@
 ﻿using ModbusNet;
 using ModbusNet.Device;
+using ModbusNet.Enum;
 
 namespace ModbusUI.Services
 {
@@ -23,7 +24,8 @@ namespace ModbusUI.Services
         {
             try
             {
-                _master = ModbusFactory.CreateAsciiMaster(settings);
+                _master = settings.ConnectionType == ConnectionType.ASCII 
+                    ? ModbusFactory.CreateAsciiMaster(settings) : ModbusFactory.CreateRtuMaster(settings);
 
                 _isConnected = true;
             }
