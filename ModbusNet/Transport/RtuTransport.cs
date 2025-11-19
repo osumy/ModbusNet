@@ -38,7 +38,19 @@ namespace ModbusNet.Transport
 
         public override byte[] BuildRequest(byte slaveAddress, byte[] pdu)
         {
-            throw new NotImplementedException();
+            // Create the message frame: slave address + PDU + CRC
+            var frame = new byte[1 + pdu.Length + 2];
+
+            frame[0] = slaveAddress;
+            pdu.AsSpan().CopyTo(frame.AsSpan(1, pdu.Length));
+
+            var crcBytes = ErrorCheckUtility.ComputeCrc(frame.AsSpan(0, 1 + pdu.Length));
+
+            // Copy CRC bytes 
+            frame[^2] = crcBytes[0];
+            frame[^1] = crcBytes[1];
+
+            return frame;
         }
 
         public override void ChecksumsMatch(byte[] rawMessage, byte[] ErrorCheckBytes)
