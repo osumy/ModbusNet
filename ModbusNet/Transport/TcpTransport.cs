@@ -27,13 +27,36 @@ namespace ModbusNet.Transport
 
             // Initialize with random value
             _transactionId = Random.Shared.Next(1, ushort.MaxValue);
+
+            _tcpClient = new TcpClient();
+
+            // Configure before connecting
+            _tcpClient.SendTimeout = _settings.WriteTimeout;
+            _tcpClient.ReceiveTimeout = _settings.ReadTimeout;
+            _tcpClient.NoDelay = true; // Disable Nagle's algorithm for immediate sending
+
+            try
+            {
+                _tcpClient.Connect(_ipAddress, _port);
+                _stream = _tcpClient.GetStream();
+            }
+             catch (Exception)
+            {
+                throw new Exception($"Connection Failed ({_ipAddress}:{_port})");
+            }
         }
 
         // Factory method
-        public static async Task<TcpTransport> CreateAsync(ModbusSettings settings)
+        //public static async Task<TcpTransport> CreateAsync(ModbusSettings settings)
+        //{
+        //    var transport = new TcpTransport(settings);
+        //    await transport.ConnectAsync();
+        //    return transport;
+        //}
+
+        public static TcpTransport Create(ModbusSettings settings)
         {
             var transport = new TcpTransport(settings);
-            await transport.ConnectAsync();
             return transport;
         }
 
@@ -46,9 +69,19 @@ namespace ModbusNet.Transport
             _tcpClient.ReceiveTimeout = _settings.ReadTimeout;
             _tcpClient.NoDelay = true; // Disable Nagle's algorithm for immediate sending
 
-            await _tcpClient.ConnectAsync(_ipAddress, _port);
-            _stream = _tcpClient.GetStream(); // Get the data stream
+            using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_settings.Timeout));
+
+            try
+            {
+                await _tcpClient.ConnectAsync(_ipAddress, _port, cts.Token);
+                _stream = _tcpClient.GetStream();
+            }
+            catch (OperationCanceledException)
+            {
+                throw new TimeoutException($"Connection to {_ipAddress}:{_port} timed out after {_settings.Timeout}ms");
+            }
         }
+
 
         public override byte[] BuildRequest(byte slaveAddress, byte[] pdu)
         {
@@ -71,16 +104,6 @@ namespace ModbusNet.Transport
             frame[6] = slaveAddress;                    // Unit ID
             Array.Copy(pdu, 0, frame, 7, pdu.Length);
             return frame;
-        }
-
-        public override void SendRequestIgnoreResponse(byte[] request)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override ModbusResponse SendRequestReceiveResponse(byte[] request)
-        {
-            throw new NotImplementedException();
         }
 
         public override async Task<ModbusResponse> SendRequestReceiveResponseAsync(byte[] request, CancellationToken cancellationToken = default)
@@ -151,6 +174,16 @@ namespace ModbusNet.Transport
             }
 
             return buffer;
+        }
+
+        public override void SendRequestIgnoreResponse(byte[] request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ModbusResponse SendRequestReceiveResponse(byte[] request)
+        {
+            throw new NotImplementedException();
         }
 
 
