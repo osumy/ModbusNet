@@ -260,5 +260,14 @@ namespace ModbusNet.Transport
             }
         }
 
+        public override Task<ModbusResponse> SendRequestReceiveResponseAsync(byte[] request, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task SendRequestIgnoreResponseAsync(byte[] request, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

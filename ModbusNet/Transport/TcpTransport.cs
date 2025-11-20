@@ -1,4 +1,5 @@
 ﻿using ModbusNet.Messages;
+using System.IO.Ports;
 using System.Net.Sockets;
 
 namespace ModbusNet.Transport
@@ -12,6 +13,9 @@ namespace ModbusNet.Transport
         private readonly int _port;
         private int _transactionId;
         private ModbusSettings _settings;
+
+        public bool IsConnected => _tcpClient.Connected;
+        private bool _disposed = false;
 
         private TcpTransport(ModbusSettings settings)
         {
@@ -67,11 +71,6 @@ namespace ModbusNet.Transport
             return frame;
         }
 
-        public override void ChecksumsMatch(byte[] rawMessage, byte[] ErrorCheckBytes)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void SendRequestIgnoreResponse(byte[] request)
         {
             throw new NotImplementedException();
@@ -80,6 +79,30 @@ namespace ModbusNet.Transport
         public override ModbusResponse SendRequestReceiveResponse(byte[] request)
         {
             throw new NotImplementedException();
+        }
+
+        public override Task<ModbusResponse> SendRequestReceiveResponseAsync(byte[] request, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task SendRequestIgnoreResponseAsync(byte[] request, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+        public override void ChecksumsMatch(byte[] rawMessage, byte[] ErrorCheckBytes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Dispose()
+        {
+            if (!_disposed)
+            {
+                _tcpClient?.Dispose();
+                _stream?.Dispose();
+                _disposed = true;
+            }
         }
     }
 }

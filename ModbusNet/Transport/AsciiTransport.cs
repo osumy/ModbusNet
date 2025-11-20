@@ -192,7 +192,7 @@ namespace ModbusNet.Transport
         /// <summary>
         /// Send request, do not wait for response (only waits for the write to complete).
         /// </summary>
-        public async Task SendRequestIgnoreResponseAsync(byte[] request, CancellationToken cancellationToken = default)
+        public override async Task SendRequestIgnoreResponseAsync(byte[] request, CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
             if (!IsConnected) throw new InvalidOperationException("Serial port is not connected.");
@@ -224,7 +224,7 @@ namespace ModbusNet.Transport
         /// <summary>
         /// Send request and await response PDU (async, with timeout).
         /// </summary>
-        public async Task<ModbusResponse> SendRequestReceiveResponseAsync(byte[] request, TimeSpan timeout, CancellationToken cancellationToken = default)
+        public override async Task<ModbusResponse> SendRequestReceiveResponseAsync(byte[] request, CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
             if (!IsConnected) throw new InvalidOperationException("Serial port is not connected.");
@@ -232,7 +232,7 @@ namespace ModbusNet.Transport
             for (int attempt = 0; attempt <= _settings.RetryCount; attempt++)
             {
                 using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                linkedCts.CancelAfter(timeout);
+                linkedCts.CancelAfter(_settings.WriteTimeout);
 
                 try
                 {
