@@ -62,11 +62,11 @@ namespace ModbusNet.Transport
             var frame = new byte[7 + pdu.Length];
             frame[0] = (byte)(transactionId >> 8);
             frame[1] = (byte)(transactionId & 0xFF);
-            frame[2] = 0x00;
-            frame[3] = 0x00;
-            frame[4] = (byte)((pdu.Length + 1) >> 8);
-            frame[5] = (byte)((pdu.Length + 1) & 0xFF);
-            frame[6] = slaveAddress;
+            frame[2] = 0x00;                            // Protocol ID High
+            frame[3] = 0x00;                            // Protocol ID Low
+            frame[4] = (byte)((pdu.Length + 1) >> 8);   // Length High (+1 for Unit ID)
+            frame[5] = (byte)((pdu.Length + 1) & 0xFF); // Length Low
+            frame[6] = slaveAddress;                    // Unit ID
             Array.Copy(pdu, 0, frame, 7, pdu.Length);
             return frame;
         }
@@ -83,12 +83,31 @@ namespace ModbusNet.Transport
 
         public override Task<ModbusResponse> SendRequestReceiveResponseAsync(byte[] request, CancellationToken cancellationToken = default)
         {
+            ThrowIfDisposed();
+            EnsureConnected();
+
             throw new NotImplementedException();
         }
 
         public override Task SendRequestIgnoreResponseAsync(byte[] request, CancellationToken cancellationToken = default)
         {
+            ThrowIfDisposed();
+            EnsureConnected();
+
             throw new NotImplementedException();
+        }
+
+
+        private void EnsureConnected()
+        {
+            if (!IsConnected)
+                throw new InvalidOperationException("Not connected to Modbus TCP device");
+        }
+
+        protected void ThrowIfDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
         }
 
         public override void Dispose()
