@@ -251,7 +251,7 @@ namespace ModbusNet.Transport
                 throw new ObjectDisposedException(GetType().Name);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             if (!_disposed)
             {

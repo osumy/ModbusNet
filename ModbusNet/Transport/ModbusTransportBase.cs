@@ -61,9 +61,6 @@ namespace ModbusNet.Transport
         }
         public abstract void ChecksumsMatch(byte[] rawMessage, byte[] ErrorCheckBytes);
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void Dispose();
     }
 }
