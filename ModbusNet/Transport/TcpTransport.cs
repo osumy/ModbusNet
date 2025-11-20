@@ -14,6 +14,8 @@ namespace ModbusNet.Transport
         private int _transactionId;
         private ModbusSettings _settings;
 
+        private readonly SemaphoreSlim _sendLock = new SemaphoreSlim(1, 1); // For thread safety
+
         public bool IsConnected => _tcpClient.Connected;
         private bool _disposed = false;
 
@@ -89,12 +91,21 @@ namespace ModbusNet.Transport
             throw new NotImplementedException();
         }
 
-        public override Task SendRequestIgnoreResponseAsync(byte[] request, CancellationToken cancellationToken = default)
+        public override async Task SendRequestIgnoreResponseAsync(byte[] request, CancellationToken cancellationToken = default)
         {
-            ThrowIfDisposed();
-            EnsureConnected();
+            await _sendLock.WaitAsync(cancellationToken);
 
-            throw new NotImplementedException();
+            try
+            {
+                ThrowIfDisposed();
+                EnsureConnected();
+
+                await _stream.WriteAsync(request, 0, request.Length, cancellationToken);
+            }
+            finally
+            {
+                _sendLock.Release();
+            }
         }
 
 
