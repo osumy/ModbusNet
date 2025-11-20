@@ -62,7 +62,6 @@ namespace ModbusNet.Transport
             if (byteCount != responsePdu.Length - 2)
                 throw new FormatException("Byte count mismatch.");
         }
-        public abstract void ChecksumsMatch(byte[] rawMessage, byte[] ErrorCheckBytes);
 
         public abstract void Dispose();
     }

@@ -237,7 +237,7 @@ namespace ModbusNet.Transport
             return frame;
         }
 
-        public override void ChecksumsMatch(byte[] rawMessage, byte[] ErrorCheckBytes)
+        private void ChecksumsMatch(byte[] rawMessage, byte[] ErrorCheckBytes)
         {
             if (!ErrorCheckUtility.ValidateCrc(rawMessage, ErrorCheckBytes))
             {

@@ -90,10 +90,6 @@ namespace ModbusNet.Transport
         {
             throw new NotImplementedException();
         }
-        public override void ChecksumsMatch(byte[] rawMessage, byte[] ErrorCheckBytes)
-        {
-            throw new NotImplementedException();
-        }
 
         public override void Dispose()
         {
