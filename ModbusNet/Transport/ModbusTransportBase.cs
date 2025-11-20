@@ -31,6 +31,9 @@ namespace ModbusNet.Transport
 
         public abstract ModbusResponse SendRequestReceiveResponse(byte[] request);
         public abstract void SendRequestIgnoreResponse(byte[] request);
+        public abstract Task<ModbusResponse> SendRequestReceiveResponseAsync(byte[] request, CancellationToken cancellationToken = default);
+        public abstract Task SendRequestIgnoreResponseAsync(byte[] request, CancellationToken cancellationToken = default);
+        
         public void ValidateFC(byte[] responsePdu, byte expectedFunctionCode)
         {
             if (responsePdu == null || responsePdu.Length == 0)
