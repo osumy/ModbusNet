@@ -21,9 +21,9 @@ namespace ModbusNet
             return new ModbusMaster(transport, modbusSettings);
         }
 
-        public static ModbusMaster CreateTcpMaster(ModbusSettings modbusSettings)
+        public static async Task<ModbusMaster> CreateTcpMaster(ModbusSettings modbusSettings)
         {
-            var transport = new TcpTransport(modbusSettings);
+            var transport = await TcpTransport.CreateAsync(modbusSettings);
             return new ModbusMaster(transport, modbusSettings);
         }
 
