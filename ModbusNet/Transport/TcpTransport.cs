@@ -83,12 +83,41 @@ namespace ModbusNet.Transport
             throw new NotImplementedException();
         }
 
-        public override Task<ModbusResponse> SendRequestReceiveResponseAsync(byte[] request, CancellationToken cancellationToken = default)
+        public override async Task<ModbusResponse> SendRequestReceiveResponseAsync(byte[] request, CancellationToken cancellationToken = default)
         {
-            ThrowIfDisposed();
-            EnsureConnected();
+            await _sendLock.WaitAsync(cancellationToken);
 
-            throw new NotImplementedException();
+            try
+            {
+                ThrowIfDisposed();
+                EnsureConnected();
+
+                // Send request
+                await _stream.WriteAsync(request, 0, request.Length, cancellationToken);
+
+                // Read MBAP header
+                var header = await ReadExactAsync(7, cancellationToken);
+
+                // Validate MBAP header
+                var transactionId = (ushort)((header[0] << 8) | header[1]);
+                var protocolId = (ushort)((header[2] << 8) | header[3]);
+                var length = (ushort)((header[4] << 8) | header[5]);
+                var unitId = header[6];
+
+                if (protocolId != 0)
+                    throw new Exception("Invalid protocol ID in response");
+
+                // Read PDU (length includes Unit ID, so subtract 1)
+                var pduLength = length - 1;
+                var pdu = await ReadExactAsync(pduLength, cancellationToken);
+
+                // Create response - you'll need to adapt this to your ModbusResponse structure
+                return BuildResponse(pdu);
+            }
+            finally
+            {
+                _sendLock.Release();
+            }
         }
 
         public override async Task SendRequestIgnoreResponseAsync(byte[] request, CancellationToken cancellationToken = default)
@@ -106,6 +135,22 @@ namespace ModbusNet.Transport
             {
                 _sendLock.Release();
             }
+        }
+
+        private async Task<byte[]> ReadExactAsync(int length, CancellationToken cancellationToken = default)
+        {
+            var buffer = new byte[length];
+            int totalRead = 0;
+
+            while (totalRead < length)
+            {
+                int read = await _stream.ReadAsync(buffer, totalRead, length - totalRead, cancellationToken);
+                if (read == 0)
+                    throw new Exception("Connection closed while reading response");
+                totalRead += read;
+            }
+
+            return buffer;
         }
 
 
