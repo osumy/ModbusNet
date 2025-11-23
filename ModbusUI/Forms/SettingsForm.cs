@@ -22,6 +22,7 @@ namespace Modbus.Forms
             Settings = currentSettings;
 
             fillForm();
+            enableGroups();
         }
 
         /// <summary>
@@ -102,6 +103,14 @@ namespace Modbus.Forms
             radioButtonASCII.Checked = Settings.ConnectionType.ToString() == "ASCII";
         }
 
+        private void enableGroups()
+        {
+            bool isSerial = comboConnectionType.SelectedItem.ToString() == "Serial Port";
+            groupBox6.Enabled = !isSerial;
+            groupBox2.Enabled = isSerial;
+            groupBox3.Enabled = isSerial;
+        }
+
         private void okBtn_Click(object sender, EventArgs e)
         {
             Settings.ConnectionType = comboConnectionType.SelectedItem.ToString() switch
@@ -168,6 +177,11 @@ namespace Modbus.Forms
                     }
                 }
             }
+        }
+
+        private void comboConnectionType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            enableGroups();
         }
     }
 }

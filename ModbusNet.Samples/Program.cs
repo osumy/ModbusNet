@@ -1,11 +1,15 @@
-﻿using ModbusNet;
+﻿//using ModbusNet;
 
-var master = ModbusFactory.CreateAsciiMaster(ModbusSettings.Default);
+//var master = ModbusFactory.CreateAsciiMaster(ModbusSettings.Default);
 
 
-var resp = master.ReadMultipleHoldingRegisters(slaveAddress: 1, startAddress: 6500, numberOfPoints: 5);
+//var resp = master.ReadMultipleHoldingRegisters(slaveAddress: 1, startAddress: 6500, numberOfPoints: 5);
 
-foreach (var reg in resp)
-{
-    Console.WriteLine(reg);
-}
+//foreach (var reg in resp)
+//{
+//    Console.WriteLine(reg);
+//}
+
+using ModbusNet.Samples;
+
+TcpIp.Test();

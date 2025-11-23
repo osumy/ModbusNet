@@ -31,6 +31,9 @@ namespace ModbusNet.Transport
 
         public abstract ModbusResponse SendRequestReceiveResponse(byte[] request);
         public abstract void SendRequestIgnoreResponse(byte[] request);
+        public abstract Task<ModbusResponse> SendRequestReceiveResponseAsync(byte[] request, CancellationToken cancellationToken = default);
+        public abstract Task SendRequestIgnoreResponseAsync(byte[] request, CancellationToken cancellationToken = default);
+        
         public void ValidateFC(byte[] responsePdu, byte expectedFunctionCode)
         {
             if (responsePdu == null || responsePdu.Length == 0)
@@ -59,11 +62,7 @@ namespace ModbusNet.Transport
             if (byteCount != responsePdu.Length - 2)
                 throw new FormatException("Byte count mismatch.");
         }
-        public abstract void ChecksumsMatch(byte[] rawMessage, byte[] ErrorCheckBytes);
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void Dispose();
     }
 }

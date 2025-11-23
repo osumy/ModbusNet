@@ -49,11 +49,22 @@
             groupBox5 = new GroupBox();
             label2 = new Label();
             delayTBox = new TextBox();
+            groupBox6 = new GroupBox();
+            radioButtonIPv6 = new RadioButton();
+            radioButtonIPv4 = new RadioButton();
+            label6 = new Label();
+            textBoxConnectionTimeout = new TextBox();
+            label5 = new Label();
+            textBoxPort = new TextBox();
+            label4 = new Label();
+            textBoxIP = new TextBox();
+            label3 = new Label();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
             groupBox4.SuspendLayout();
             groupBox5.SuspendLayout();
+            groupBox6.SuspendLayout();
             SuspendLayout();
             // 
             // comboConnectionType
@@ -66,6 +77,7 @@
             comboConnectionType.Size = new Size(281, 23);
             comboConnectionType.TabIndex = 1;
             comboConnectionType.ValueMember = "Value";
+            comboConnectionType.SelectedIndexChanged += comboConnectionType_SelectedIndexChanged;
             // 
             // groupBox1
             // 
@@ -276,11 +288,111 @@
             delayTBox.TabIndex = 9;
             delayTBox.Text = "20";
             // 
+            // groupBox6
+            // 
+            groupBox6.Controls.Add(radioButtonIPv6);
+            groupBox6.Controls.Add(radioButtonIPv4);
+            groupBox6.Controls.Add(label6);
+            groupBox6.Controls.Add(textBoxConnectionTimeout);
+            groupBox6.Controls.Add(label5);
+            groupBox6.Controls.Add(textBoxPort);
+            groupBox6.Controls.Add(label4);
+            groupBox6.Controls.Add(textBoxIP);
+            groupBox6.Controls.Add(label3);
+            groupBox6.Enabled = false;
+            groupBox6.Location = new Point(12, 287);
+            groupBox6.Name = "groupBox6";
+            groupBox6.Size = new Size(450, 120);
+            groupBox6.TabIndex = 11;
+            groupBox6.TabStop = false;
+            groupBox6.Text = "Remote Modbus Server";
+            // 
+            // radioButtonIPv6
+            // 
+            radioButtonIPv6.AutoSize = true;
+            radioButtonIPv6.Location = new Point(222, 89);
+            radioButtonIPv6.Name = "radioButtonIPv6";
+            radioButtonIPv6.Size = new Size(47, 19);
+            radioButtonIPv6.TabIndex = 9;
+            radioButtonIPv6.Text = "IPv6";
+            radioButtonIPv6.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonIPv4
+            // 
+            radioButtonIPv4.AutoSize = true;
+            radioButtonIPv4.Checked = true;
+            radioButtonIPv4.Location = new Point(222, 69);
+            radioButtonIPv4.Name = "radioButtonIPv4";
+            radioButtonIPv4.Size = new Size(47, 19);
+            radioButtonIPv4.TabIndex = 11;
+            radioButtonIPv4.TabStop = true;
+            radioButtonIPv4.Text = "IPv4";
+            radioButtonIPv4.UseVisualStyleBackColor = true;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Font = new Font("Segoe UI", 8F);
+            label6.Location = new Point(175, 89);
+            label6.Name = "label6";
+            label6.Size = new Size(27, 13);
+            label6.TabIndex = 10;
+            label6.Text = "(ms)";
+            // 
+            // textBoxConnectionTimeout
+            // 
+            textBoxConnectionTimeout.Location = new Point(100, 85);
+            textBoxConnectionTimeout.Name = "textBoxConnectionTimeout";
+            textBoxConnectionTimeout.Size = new Size(63, 23);
+            textBoxConnectionTimeout.TabIndex = 5;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(95, 67);
+            label5.Name = "label5";
+            label5.Size = new Size(102, 15);
+            label5.TabIndex = 4;
+            label5.Text = "Connect Timeout:";
+            // 
+            // textBoxPort
+            // 
+            textBoxPort.Location = new Point(10, 85);
+            textBoxPort.Name = "textBoxPort";
+            textBoxPort.Size = new Size(63, 23);
+            textBoxPort.TabIndex = 3;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(6, 67);
+            label4.Name = "label4";
+            label4.Size = new Size(67, 15);
+            label4.TabIndex = 2;
+            label4.Text = "Server Port:";
+            // 
+            // textBoxIP
+            // 
+            textBoxIP.Location = new Point(10, 41);
+            textBoxIP.Name = "textBoxIP";
+            textBoxIP.Size = new Size(423, 23);
+            textBoxIP.TabIndex = 1;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(6, 21);
+            label3.Name = "label3";
+            label3.Size = new Size(146, 15);
+            label3.TabIndex = 0;
+            label3.Text = "IP Address or Node Name:";
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(474, 305);
+            ClientSize = new Size(474, 419);
+            Controls.Add(groupBox6);
             Controls.Add(groupBox5);
             Controls.Add(groupBox4);
             Controls.Add(groupBox3);
@@ -306,6 +418,8 @@
             groupBox4.PerformLayout();
             groupBox5.ResumeLayout(false);
             groupBox5.PerformLayout();
+            groupBox6.ResumeLayout(false);
+            groupBox6.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -325,12 +439,22 @@
         private ComboBox comboDataBits;
         private GroupBox groupBox3;
         private RadioButton radioButtonASCII;
-        private RadioButton radioButtonRTU;
         private GroupBox groupBox4;
         private TextBox respTBox;
         private Label label1;
         private GroupBox groupBox5;
         private Label label2;
         private TextBox delayTBox;
+        private GroupBox groupBox6;
+        private Label label3;
+        private TextBox textBoxPort;
+        private Label label4;
+        private TextBox textBoxIP;
+        private RadioButton radioButtonRTU;
+        private RadioButton radioButtonIPv6;
+        private RadioButton radioButtonIPv4;
+        private Label label6;
+        private TextBox textBoxConnectionTimeout;
+        private Label label5;
     }
 }
