@@ -6,6 +6,29 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+	<!-- NuGet Package Properties -->
+	<PropertyGroup>
+		<PackageId>ModbusNet</PackageId>
+		<PackageVersion>0.3.0</PackageVersion>
+		<Authors>osumyy</Authors>
+		<PackageDescription>
+			A modern .NET library for Modbus ASCII, RTU (serial), and TCP communication.
+			Supports full function codes, async/await, retry logic, and built-in error handling.
+		</PackageDescription>
+		<PackageTags>modbus;modbus-tcp;modbus-rtu;modbus-ascii;modbus-serial;modbus-protocol;serial;plc;automation;industrial</PackageTags>
+		<PackageProjectUrl>https://github.com/osumy/ModbusNet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/osumy/ModbusNet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageOutputPath>./nupkg</PackageOutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="../README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="System.IO.Ports" Version="9.0.10" />
   </ItemGroup>

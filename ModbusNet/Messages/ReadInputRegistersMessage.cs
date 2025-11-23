@@ -1,5 +1,4 @@
-﻿
-using ModbusNet.Enum;
+﻿using ModbusNet.Enum;
 
 namespace ModbusNet.Messages
 {
