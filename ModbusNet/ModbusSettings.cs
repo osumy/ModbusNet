@@ -47,5 +47,13 @@ namespace ModbusNet
         public int RtuInterFrameTimeMs { get; set; } = 2;
 
         #endregion
+
+        #region TCP Specific Settings
+
+        public string IpAddress { get; set; } = "192.168.0.10";
+        public int Port { get; set; } = 502;
+
+        #endregion
+
     }
 }
